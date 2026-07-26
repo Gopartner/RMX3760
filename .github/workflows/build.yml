@@ -25,7 +25,6 @@ jobs:
         haskell: true
         large-packages: true
         docker-images: true
-        swift: true
 
     - name: Initialize Environment
       run: |
