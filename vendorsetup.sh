@@ -1,3 +1,1 @@
-add_lunch_combo twrp_RMX3760-user
-add_lunch_combo twrp_RMX3760-userdebug
-add_lunch_combo twrp_RMX3760-eng
+# vendorsetup.sh for TWRP 12.1
