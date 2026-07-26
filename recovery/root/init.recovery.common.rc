@@ -96,6 +96,16 @@ on init
     mkdir /config/usb_gadget/g1/functions/sprdgser.gs7 0770 shell shell
 
 on boot
+    # Auto-load all Unisoc touch & input modules
+    insmod /lib/modules/focaltech_touch-modules.ko
+    insmod /lib/modules/focaltech_ft8725_spi_ts.ko
+    insmod /lib/modules/focaltech_ft8756_spi_ts.ko
+    insmod /lib/modules/novatek_nt36528_spi_ts.ko
+    insmod /lib/modules/nvt_nt36xxx_spi_ts.ko
+    insmod /lib/modules/chipone-tddi-modules.ko
+    insmod /lib/modules/jadard_touch-modules.ko
+    insmod /lib/modules/himax_mmi-modules.ko
+    insmod /lib/modules/omnivision_tcm-modules.ko
     setprop sys.usb.configfs 1
     write /sys/block/mmcblk0boot0/force_ro 0
     write /sys/block/mmcblk0boot1/force_ro 0

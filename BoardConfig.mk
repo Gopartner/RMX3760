@@ -135,3 +135,16 @@ BOARD_KERNEL_PAGESIZE := 4096
 BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
 BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
 BOARD_INCLUDE_DTB_IN_VENDOR_BOOT := true
+
+# TWRP Crypto & Decryption
+TW_INCLUDE_CRYPTO := true
+TW_INCLUDE_CRYPTO_FBE := true
+
+# TWRP UI & Brightness Settings
+TW_MAX_BRIGHTNESS := 255
+TW_DEFAULT_BRIGHTNESS := 150
+TW_BRIGHTNESS_PATH := "/sys/class/backlight/sprd_backlight/brightness"
+TW_DEFAULT_TIMEZONE := "WIT-7"
+
+# Target Recovery Modules Injection
+TARGET_RECOVERY_DEVICE_MODULES := $(wildcard $(DEVICE_PATH)/prebuilt/modules/*.ko)
