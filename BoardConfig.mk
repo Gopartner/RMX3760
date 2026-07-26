@@ -126,3 +126,7 @@ BOARD_USES_VENDOR_BOOT_IMAGE := true
 # Verified DTB from Vendor Boot Dump
 BOARD_PREBUILT_DTBIMAGE_DIR := device/realme/RMX3760/prebuilt
 TARGET_PREBUILT_DTB := device/realme/RMX3760/prebuilt/dtb.img
+
+# Prebuilt Kernel from boot_b.img
+TARGET_PREBUILT_KERNEL := device/realme/RMX3760/prebuilt/kernel
+BOARD_KERNEL_PAGESIZE := 4096
