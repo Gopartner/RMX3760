@@ -130,3 +130,8 @@ TARGET_PREBUILT_DTB := device/realme/RMX3760/prebuilt/dtb.img
 # Prebuilt Kernel from boot_b.img
 TARGET_PREBUILT_KERNEL := device/realme/RMX3760/prebuilt/kernel
 BOARD_KERNEL_PAGESIZE := 4096
+
+# Force Ramdisk Recovery to Vendor Boot (Android 15 Virtual A/B)
+BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
+BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
+BOARD_INCLUDE_DTB_IN_VENDOR_BOOT := true
