@@ -57,7 +57,7 @@ jobs:
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
         lunch twrp_RMX3760-eng
-        mka recoveryimage bootimage vendor_bootimage -j$(nproc --all) || true
+        mka recoveryimage bootimage vendorbootimage -j$(nproc --all) || true
         echo "=== Output Folder Check ==="
         find out/target/product/ -name "*.img" || true
 
