@@ -57,12 +57,14 @@ jobs:
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
         lunch twrp_RMX3760-eng
-        mka recoveryimage bootimage vendorbootimage -j$(nproc --all) 
-        echo "=== Output Folder Check ==="
-        find out/target/product/ -name "*.img" 
+        mka recoveryimage bootimage vendorbootimage -j$(nproc --all)
+        
+        # Pindahkan file .img ke folder khusus di luar out/ agar aman dari masalah permission root
+        mkdir -p output_img
+        cp out/target/product/RMX3760/*.img output_img/ || true
 
     - name: Upload Recovery Image
       uses: actions/upload-artifact@v4
       with:
-        name: TWRP_Realme_C53_Android15
-        path: workspace/**/*.img
+        name: TWRP_Realme_C53_RMX3760
+        path: workspace/output_img/*.img
