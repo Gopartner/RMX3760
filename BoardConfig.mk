@@ -10,7 +10,7 @@ DEVICE_PATH := device/realme/RMX3760
 # For building with minimal manifest
 ALLOW_MISSING_DEPENDENCIES := true
 
-# Architecture Setup (AOSP Standard 64-bit/32-bit Multilib)
+# Architecture Setup
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
 TARGET_CPU_ABI := arm64-v8a
@@ -29,7 +29,7 @@ TARGET_IS_64_BIT := true
 TARGET_USES_64_BIT_BINDER := true
 TARGET_SUPPORTS_64_BIT_APPS := true
 
-# Bootloader & Assertation
+# Bootloader & Platform
 TARGET_BOOTLOADER_BOARD_NAME := ums9230_hulk
 TARGET_OTA_ASSERT_DEVICE := RMX3760
 TARGET_NO_BOOTLOADER := true
@@ -37,10 +37,9 @@ TARGET_NO_BOOTLOADER := true
 ENABLE_CPUSETS := true
 ENABLE_SCHEDBOOST := true
 
-# Platform
 TARGET_BOARD_PLATFORM := ums9230
 
-# Kernel & Header v4 Setup (Pola Nino088: Prebuilt DTB saja, tanpa kernel bawaan)
+# Kernel & Header v4 Setup (Pola Nino088)
 TARGET_NO_KERNEL := true
 BOARD_RAMDISK_USE_LZ4 := true
 
@@ -60,7 +59,7 @@ BOARD_MKBOOTIMG_ARGS += --vendor_cmdline "$(BOARD_VENDOR_CMDLINE)"
 BOARD_MKBOOTIMG_ARGS += --pagesize $(BOARD_PAGE_SIZE) --board ""
 BOARD_MKBOOTIMG_ARGS += --kernel_offset $(BOARD_KERNEL_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
-BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
+BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_TAGS_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 
 TARGET_KERNEL_ARCH := arm64
@@ -85,7 +84,7 @@ VENDOR_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
 PLATFORM_VERSION := 15
 PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
 
-# Partitions Size & Filesystems (Sesuai Firmware RMX3760)
+# Partitions Size & Filesystems (Sesuai Firmware RMX3760 - Disesuaikan dengan Valid Name AOSP)
 BOARD_FLASH_BLOCK_SIZE := 262144
 BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 104857600
 BOARD_HAS_LARGE_FILESYSTEM := true
@@ -103,10 +102,11 @@ TARGET_USERIMAGES_USE_EXT4 := true
 
 BOARD_SUPER_PARTITION_SIZE := 9126805504
 BOARD_SUPER_PARTITION_GROUPS := realme_dynamic_partitions
-BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm system_dlkm
-BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 9122611200
+# PERBAIKAN: system_dlkm DIBUANG dari daftar ini agar build tidak error!
+BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm
+BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 9122611200 # (BOARD_SUPER_PARTITION_SIZE - 4194304)
 
-# Copy Out Paths
+# Copy Out Paths (Pola Nino088)
 TARGET_COPY_OUT_PRODUCT := product
 TARGET_COPY_OUT_SYSTEM_EXT := system_ext
 TARGET_COPY_OUT_VENDOR := vendor
@@ -155,12 +155,20 @@ TW_INCLUDE_LIBRESETPROP := true
 TWRP_INCLUDE_LOGCAT := true
 TARGET_USES_LOGD := true
 
+# Additional binaries & libraries needed for recovery (Pola Nino088)
+TARGET_RECOVERY_DEVICE_MODULES += \
+    libkeymaster4 \
+    libpuresoftkeymasterdevice
+
 # Decryption & FBE v2 Setup (Pola Nino088)
 TW_INCLUDE_CRYPTO := true
 TW_INCLUDE_CRYPTO_FBE := true
 TW_USE_FSCRYPT_POLICY := 2
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
 TW_PREPARE_DATA_MEDIA_EARLY := true
+TW_RECOVERY_ADDITIONAL_RELINK_LIBRARY_FILES += \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libkeymaster4.so \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libpuresoftkeymasterdevice.so
 
-# Target Recovery Kernel Modules Injection (Sesuai lokasi baru)
-TARGET_RECOVERY_DEVICE_MODULES := $(wildcard $(DEVICE_PATH)/recovery/root/lib/modules/*.ko)
+# Target Recovery Kernel Modules Injection
+TARGET_RECOVERY_DEVICE_MODULES += $(wildcard $(DEVICE_PATH)/recovery/root/lib/modules/*.ko)
