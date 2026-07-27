@@ -5,9 +5,9 @@
 ## Please include it in /init.recovery.${ro.hardware}.rc
 #
 
-service healthd /system/bin/healthd -r
-    critical
-    seclabel u:r:healthd:s0
+#service healthd /system/bin/healthd -r
+#    critical
+#    seclabel u:r:healthd:s0
 
 service create_splloader_dual_slot_byname_path /system/bin/create_splloader_dual_slot_byname_path.sh
     user root
@@ -166,7 +166,7 @@ on property:ro.debuggable=1
     write /sys/module/smsg/parameters/debug_enable 1
 
 on property:ro.bootmode=recovery
-    class_start recovery
+    start recovery
 
 on property:sys.usb.configfs=1 && property:sys.usb.ffs.ready=1 && property:sys.usb.config=adb,vser,gser
     write /config/usb_gadget/g1/idVendor 0x1782
