@@ -1,0 +1,11 @@
+#
+# Properties for Realme C53 (RMX3760) - TWRP
+# Platform: Unisoc UMS9230
+#
+
+# Crypto / Encryption Setup
+ro.crypto.state=encrypted
+ro.crypto.type=file
+
+# USB & Debugging
+persist.sys.usb.config=mtp,adb
