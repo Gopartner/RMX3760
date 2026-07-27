@@ -27,7 +27,6 @@
 /logo                emmc      /dev/block/by-name/logo              flags=display=logo
 /fbootlogo           emmc      /dev/block/by-name/fbootlogo         flags=display=fbootlogo
 /system              erofs     system                               flags=display=system;logical;slotselect
-/system              erofs     system                               flags=display=system;logical;slotselect
 /system_ext          erofs     system_ext                           flags=display=system_ext;logical;slotselect
 /vendor              erofs     vendor                               flags=display=vendor;logical;slotselect
 /odm                 erofs     odm                                  flags=display=odm;logical;slotselect

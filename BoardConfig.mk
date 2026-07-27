@@ -7,10 +7,10 @@
 
 DEVICE_PATH := device/realme/RMX3760
 
-# For building with minimal manifest
+# Minimal Manifest & Dependencies
 ALLOW_MISSING_DEPENDENCIES := true
 
-# A/B & Virtual A/B
+# A/B & Virtual A/B Partitions Configuration
 AB_OTA_UPDATER := true
 AB_OTA_PARTITIONS += \
     vbmeta_system \
@@ -28,13 +28,15 @@ AB_OTA_PARTITIONS += \
     vbmeta_vendor \
     vendor_dlkm
 
-# Header v4 Setup
+# Header v4 Setup & Recovery Ramdisk in Vendor Boot
 BOARD_USES_RECOVERY_AS_BOOT := false
 BOARD_USES_VENDOR_BOOT := true
+BOARD_USES_VENDOR_BOOT_IMAGE := true
 BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
-BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := false
+BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
+BOARD_INCLUDE_DTB_IN_VENDOR_BOOT := true
 
-# Architecture
+# Target Architecture
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
 TARGET_CPU_ABI := arm64-v8a
@@ -49,33 +51,34 @@ TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := generic
 TARGET_2ND_CPU_VARIANT_RUNTIME := cortex-a55
 
-# Bootloader
+# Bootloader & Platform
 TARGET_BOOTLOADER_BOARD_NAME := ums9230_hulk
 TARGET_NO_BOOTLOADER := true
+TARGET_BOARD_PLATFORM := ums9230
 
 # Display
 TARGET_SCREEN_DENSITY := 320
 
-# Kernel & Boot Header Version
+# Kernel, Page Size & Boot Header Configuration
 BOARD_BOOTIMG_HEADER_VERSION := 4
-BOARD_KERNEL_BASE := 0x00000000
-BOARD_KERNEL_CMDLINE := console=ttyS1,115200n8 bootconfig
+BOARD_BOOT_HEADER_VERSION := 4
 BOARD_KERNEL_PAGESIZE := 4096
+BOARD_KERNEL_BASE := 0x00000000
 BOARD_RAMDISK_OFFSET := 0x05400000
 BOARD_KERNEL_TAGS_OFFSET := 0x00000100
+BOARD_KERNEL_CMDLINE := console=ttyS1,115200n8 bootconfig
+BOARD_KERNEL_IMAGE_NAME := Image
+
+# Prebuilt Kernel & DTB
+TARGET_FORCE_PREBUILT_KERNEL := true
+TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/Image
+TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb
+BOARD_PREBUILT_DTBIMAGE_DIR := $(DEVICE_PATH)/prebuilt
+
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
 BOARD_MKBOOTIMG_ARGS += --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
-BOARD_KERNEL_IMAGE_NAME := Image
-
-# Kernel Prebuilt
-TARGET_FORCE_PREBUILT_KERNEL := true
-ifeq ($(TARGET_FORCE_PREBUILT_KERNEL),true)
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
-TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
 BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
-BOARD_INCLUDE_DTB_IN_BOOTIMG := true
-endif
 
 # Partitions Size & Types
 BOARD_FLASH_BLOCK_SIZE := 262144
@@ -94,22 +97,19 @@ BOARD_SUPER_PARTITION_GROUPS := realme_dynamic_partitions
 BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm system_dlkm
 BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 9122611200
 
-# Platform
-TARGET_BOARD_PLATFORM := ums9230
-
-# Recovery Setup
+# Recovery & Filesystem Setup
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 
-# Verified Boot & Security Patch Hack
+# AVB & Security Patch Configuration
 BOARD_AVB_ENABLE := true
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 PLATFORM_SECURITY_PATCH := 2099-12-31
 VENDOR_SECURITY_PATCH := 2099-12-31
 PLATFORM_VERSION := 16.1.0
 
-# TWRP Configuration
+# TWRP Main Configuration
 TW_THEME := portrait_hdpi
 TW_EXTRA_LANGUAGES := true
 TW_SCREEN_BLANK_ON_BOOT := true
@@ -118,27 +118,9 @@ TW_USE_TOOLBOX := true
 TW_INCLUDE_REPACKTOOLS := true
 TW_INCLUDE_FASTBOOTD := true
 TW_INCLUDE_CRYPTO := true
+TW_INCLUDE_CRYPTO_FBE := true
 TW_USE_FSCRYPT_POLICY := 2
 TW_DEVICE_VERSION := RMX3760_A15
-BOARD_BOOT_HEADER_VERSION := 4
-BOARD_USES_VENDOR_BOOT_IMAGE := true
-
-# Verified DTB from Vendor Boot Dump
-BOARD_PREBUILT_DTBIMAGE_DIR := device/realme/RMX3760/prebuilt
-TARGET_PREBUILT_DTB := device/realme/RMX3760/prebuilt/dtb.img
-
-# Prebuilt Kernel from boot_b.img
-TARGET_PREBUILT_KERNEL := device/realme/RMX3760/prebuilt/kernel
-BOARD_KERNEL_PAGESIZE := 4096
-
-# Force Ramdisk Recovery to Vendor Boot (Android 15 Virtual A/B)
-BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
-BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
-BOARD_INCLUDE_DTB_IN_VENDOR_BOOT := true
-
-# TWRP Crypto & Decryption
-TW_INCLUDE_CRYPTO := true
-TW_INCLUDE_CRYPTO_FBE := true
 
 # TWRP UI & Brightness Settings
 TW_MAX_BRIGHTNESS := 255
@@ -146,10 +128,7 @@ TW_DEFAULT_BRIGHTNESS := 150
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/sprd_backlight/brightness"
 TW_DEFAULT_TIMEZONE := "WIT-7"
 
-# Target Recovery Modules Injection
+# Target Recovery Modules & Display Library Injection
 TARGET_RECOVERY_DEVICE_MODULES := $(wildcard $(DEVICE_PATH)/prebuilt/modules/*.ko)
-
-# Force TWRP GUI execution
 TARGET_RECOVERY_UI_LIB := librecovery_ui_default
-TW_THEME := portrait_hdpi
 RECOVERY_SDCARD_ON_DATA := true
