@@ -25,7 +25,6 @@ service vendor.mlogservice /vendor/bin/mlogservice
 on init
     # Apply strict SELinux checking of PROT_EXEC on mmap/mprotect calls.
     write /sys/fs/selinux/checkreqprot 0
-    start healthd
     start create_splloader_dual_slot_byname_path
 
     export PATH /sbin:/system/bin:/vendor/bin
