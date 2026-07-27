@@ -148,3 +148,8 @@ TW_DEFAULT_TIMEZONE := "WIT-7"
 
 # Target Recovery Modules Injection
 TARGET_RECOVERY_DEVICE_MODULES := $(wildcard $(DEVICE_PATH)/prebuilt/modules/*.ko)
+
+# Force TWRP GUI execution
+TARGET_RECOVERY_UI_LIB := librecovery_ui_default
+TW_THEME := portrait_hdpi
+RECOVERY_SDCARD_ON_DATA := true
