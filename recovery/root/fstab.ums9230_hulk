@@ -42,5 +42,3 @@
 /storage/sdcard0     vfat      /dev/block/mmcblk1p1                 flags=display=sdcard0
 /init_boot           emmc      /dev/block/by-name/init_boot         flags=display=init_boot;slotselect
 /vendor_boot         emmc      /dev/block/by-name/vendor_boot       flags=display=vendor_boot;slotselect
-/init_boot           emmc      /dev/block/by-name/init_boot         flags=display=init_boot;slotselect
-/vendor_boot         emmc      /dev/block/by-name/vendor_boot       flags=display=vendor_boot;slotselect
