@@ -95,7 +95,6 @@ PRODUCT_PACKAGES += \
 
 # Prebuilt HAL Services, Dual-Slot Script, Linker Config & VINTF Manifests
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/recovery/root/system/etc/ld.config.txt:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/ld.config.txt \
     $(LOCAL_PATH)/recovery/root/system/etc/vintf/manifest/android.hardware.boot-service.default.xml:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/vintf/manifest/android.hardware.boot-service.default.xml \
     $(LOCAL_PATH)/recovery/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml \
     $(LOCAL_PATH)/recovery/root/system/bin/create_splloader_dual_slot_byname_path.sh:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/create_splloader_dual_slot_byname_path.sh \
