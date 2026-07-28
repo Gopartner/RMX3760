@@ -16,11 +16,11 @@ BOARD_VNDK_VERSION := current
 
 PRODUCT_PLATFORM := ums9230
 
-# Virtual A/B OTA & Compression (Sesuai prop.default original)
+# Virtual A/B OTA & Compression
 ENABLE_VIRTUAL_AB := true
 PRODUCT_VIRTUAL_AB_COMPRESSION := true
 
-# A/B Partitions Configuration (Daftar persis dari prop.default ro.odm.ab_ota_partitions)
+# A/B Partitions Configuration
 AB_OTA_UPDATER := true
 AB_OTA_PARTITIONS += \
     boot \
@@ -87,20 +87,18 @@ PRODUCT_PACKAGES += \
     android.hardware.health@2.1-impl \
     android.hardware.health@2.1-service
 
-# Fastbootd Stuff
+# Fastbootd
 PRODUCT_PACKAGES += \
     android.hardware.fastboot@1.0-impl-mock \
     android.hardware.fastboot@1.0-impl-mock.recovery \
     fastbootd
 
-# Prebuilt HAL Services, Dual-Slot Script, Linker Config & VINTF Manifests
+# VINTF Manifests & Non-ELF Scripts
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/etc/vintf/manifest/android.hardware.boot-service.default.xml:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/vintf/manifest/android.hardware.boot-service.default.xml \
     $(LOCAL_PATH)/recovery/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml \
-    $(LOCAL_PATH)/recovery/root/system/bin/create_splloader_dual_slot_byname_path.sh:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/create_splloader_dual_slot_byname_path.sh \
-    $(LOCAL_PATH)/recovery/root/system/bin/hw/android.hardware.boot-service.default_recovery:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/hw/android.hardware.boot-service.default_recovery \
-    $(LOCAL_PATH)/recovery/root/system/bin/hw/vendor.sprd.hardware.boot-service.default_recovery:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/hw/vendor.sprd.hardware.boot-service.default_recovery
+    $(LOCAL_PATH)/recovery/root/system/bin/create_splloader_dual_slot_byname_path.sh:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/create_splloader_dual_slot_byname_path.sh
 
-# Injeksi Seluruh Modul Kernel Asli secara Otomatis
+# Injeksi Modul Kernel (.ko)
 PRODUCT_COPY_FILES += \
-    $(foreach f,$(wildcard $(LOCAL_PATH)/recovery/root/lib/modules/*),$(f):$(TARGET_COPY_OUT_RECOVERY)/root/lib/modules/$(notdir $(f)))
+    $(foreach f,$(wildcard $(LOCAL_PATH)/recovery/root/lib/modules/*.ko),$(f):$(TARGET_COPY_OUT_RECOVERY)/root/lib/modules/$(notdir $(f)))
