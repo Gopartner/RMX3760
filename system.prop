@@ -1,11 +1,32 @@
 #
-# Properties for Realme C53 (RMX3760) - TWRP
-# Platform: Unisoc UMS9230
+# System properties for Realme C53 (RMX3760) - Sesuai prop.default Original
 #
 
-# Crypto / Encryption Setup
+# Platform & Hardware
+ro.board.platform=ums9230
+ro.product.board=ums9230_hulk
+ro.product.hardware=ums9230_hulk
+
+# Encryption / FBE v2 Setup
 ro.crypto.state=encrypted
 ro.crypto.type=file
+ro.crypto.allow_encrypt_override=true
+ro.crypto.fs_crypto_blkdev=true
 
-# USB & Debugging
+# Display & Recovery UI (Dari prop.default original)
+ro.sf.lcd_density=320
+ro.minui.pixel_format=RGBX_8888
+ro.recovery.ui.dropscreen=1
+ro.recovery.ui.margin_height=45
+
+# USB & MTP Configuration (Dari prop.default original)
 persist.sys.usb.config=mtp,adb
+ro.recovery.usb.vid=18D1
+ro.recovery.usb.adb.pid=D001
+ro.recovery.usb.fastboot.pid=4EE0
+
+# Virtual A/B & Dynamic Partitions (Dari prop.default original)
+ro.virtual_ab.enabled=true
+ro.boot.dynamic_partitions=true
+ro.boot.dynamic_partitions_retrofit=false
+ro.build.ab_update=true

@@ -15,7 +15,7 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_keys.mk)
 # Configure emulated_storage.mk
 $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
 
-# Virtual A/B OTA Support (Sesuai Nino088)
+# Virtual A/B OTA Support
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
 # Inherit from RMX3760 device
@@ -33,8 +33,12 @@ PRODUCT_MANUFACTURER := realme
 
 PRODUCT_GMS_CLIENTID_BASE := android-oppo
 
-# Build Properties & Fingerprint (Stock Realme C53)
+# Build Properties & Fingerprint (Sesuai prop.default original RMX3760)
 PRODUCT_BUILD_PROP_OVERRIDES += \
-    PRIVATE_BUILD_DESC="RMX3760_full-user 15 AP3A.240905.015.A2 40 release-keys"
+    PRIVATE_BUILD_DESC="ussi_arm64_full-user 15 AP3A.240905.015.A2 40 release-keys" \
+    TARGET_DEVICE="RMX3760" \
+    PRODUCT_NAME="RMX3760" \
+    PRODUCT_MODEL="RMX3760" \
+    PRODUCT_DEVICE="RMX3760"
 
 BUILD_FINGERPRINT := realme/RMX3760/RE58C2:15/AP3A.240905.015.A2/T.R4T2.1777915050:user/release-keys

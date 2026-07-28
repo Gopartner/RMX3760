@@ -1,59 +1,44 @@
-# Android fstab file for Realme C53 (RMX3760) - TWRP Android 15
-# Maintainer / Base: Unisoc UMS9230 (Header v4)
-
-# Dynamic Partitions (Super Partition - Logical)
-system                erofs    system                                flags=display="System";logical;slotselect
-system_ext            erofs    system_ext                            flags=display="System EXT";logical;slotselect
-vendor                erofs    vendor                                flags=display="Vendor";logical;slotselect
-odm                   erofs    odm                                   flags=display="ODM";logical;slotselect
-product               erofs    product                               flags=display="Product";logical;slotselect
-vendor_dlkm           erofs    vendor_dlkm                           flags=display="Vendor DLKM";logical;slotselect
-system_dlkm           erofs    system_dlkm                           flags=display="System DLKM";logical;slotselect
-
-# Core Physical Partitions
-/boot                 emmc     /dev/block/by-name/boot               flags=display="Boot";backup=1;flashimg=1;slotselect
-/init_boot            emmc     /dev/block/by-name/init_boot          flags=display="Init Boot";backup=1;flashimg=1;slotselect
-/vendor_boot          emmc     /dev/block/by-name/vendor_boot        flags=display="Vendor Boot";backup=1;flashimg=1;slotselect
-/dtbo                 emmc     /dev/block/by-name/dtbo               flags=display="DTBO";backup=1;flashimg=1;slotselect
-/vbmeta               emmc     /dev/block/by-name/vbmeta             flags=display="VBMeta";backup=1;flashimg=1;slotselect
-/vbmeta_system        emmc     /dev/block/by-name/vbmeta_system      flags=display="VBMeta System";backup=1;flashimg=1;slotselect
-/vbmeta_vendor        emmc     /dev/block/by-name/vbmeta_vendor      flags=display="VBMeta Vendor";backup=1;flashimg=1;slotselect
-
-# Userdata, Metadata & Cache
-/data                 f2fs     /dev/block/by-name/userdata           flags=display="Userdata";backup=1;keydirectory=/metadata/vold/metadata_encryption
-/metadata             f2fs     /dev/block/by-name/metadata           flags=display="Metadata";backup=1
-/cache                ext4     /dev/block/by-name/cache              flags=display="Cache";wipeduringfactoryreset
-
-# Unisoc Bootloader & Trustzone
-/spl                  emmc     /dev/block/mmcblk0boot0               flags=display="SPL";slotselect
-/spl_bk               emmc     /dev/block/mmcblk0boot1               flags=display="SPL Backup"
-/uboot                emmc     /dev/block/by-name/uboot              flags=display="U-Boot";slotselect
-/sml                  emmc     /dev/block/by-name/sml                flags=display="SML";slotselect
-/tos                  emmc     /dev/block/by-name/trustos            flags=display="TrustOS";slotselect
-/teecfg               emmc     /dev/block/by-name/teecfg             flags=display="TEE Config";slotselect
-
-# Modem & Radio Partitions (NVRAM / EFS)
-/ltedsp               emmc     /dev/block/by-name/l_ldsp             flags=display="LTE DSP";backup=1;slotselect
-/ltegdsp              emmc     /dev/block/by-name/l_gdsp             flags=display="LTE GDSP";backup=1;slotselect
-/lteagdsp             emmc     /dev/block/by-name/l_agdsp            flags=display="LTE AGDSP";backup=1;slotselect
-/ltecdsp              emmc     /dev/block/by-name/l_cdsp             flags=display="LTE CDSP";backup=1;slotselect
-/ltemodem             emmc     /dev/block/by-name/l_modem            flags=display="LTE Modem";backup=1;slotselect
-/ltefixnv1            emmc     /dev/block/by-name/l_fixnv1           flags=display="FixNV1";backup=1
-/ltefixnv2            emmc     /dev/block/by-name/l_fixnv2           flags=display="FixNV2";backup=1
-/ltedeltanv           emmc     /dev/block/by-name/l_deltanv          flags=display="DeltaNV";backup=1;slotselect
-/lteruntimenv1        emmc     /dev/block/by-name/l_runtimenv1       flags=display="RuntimeNV1";backup=1
-/lteruntimenv2        emmc     /dev/block/by-name/l_runtimenv2       flags=display="RuntimeNV2";backup=1
-/wcnmodem             emmc     /dev/block/by-name/wcnmodem           flags=display="WCN Modem";backup=1;slotselect
-/gnssmodem            emmc     /dev/block/by-name/gnssmodem          flags=display="GNSS Modem";backup=1;slotselect
-/pmsys                emmc     /dev/block/by-name/pm_sys             flags=display="PM Sys";slotselect
-
-# Miscellaneous & OEM
-/misc                 emmc     /dev/block/by-name/misc               flags=display="Misc"
-/persist              emmc     /dev/block/by-name/persist            flags=display="Persist";backup=1
-/logo                 emmc     /dev/block/by-name/logo               flags=display="Logo";backup=1
-/fbootlogo            emmc     /dev/block/by-name/fbootlogo          flags=display="Fastboot Logo"
-/prodnv               ext4     /dev/block/by-name/prodnv             flags=display="Product NV";backup=1
-
-# External Storage (SD-Card & USB-OTG)
-/external_sd          vfat     /dev/block/mmcblk1p1  /dev/block/mmcblk1  flags=display="MicroSD";storage;wipeingroup=charset;removable
-/usb_otg              vfat     /dev/block/sdda1      /dev/block/sdda     flags=display="USB-OTG";storage;wipeingroup=charset;removable
+# This is automatically generated by the makefile
+/dev/block/mmcblk0boot0 /spl emmc defaults slotselect
+/dev/block/mmcblk0boot1 /spl_bk emmc defaults defaults
+/dev/block/by-name/uboot /uboot emmc defaults slotselect
+/dev/block/by-name/sml /sml emmc defaults slotselect
+/dev/block/by-name/trustos /tos emmc defaults slotselect
+/dev/block/by-name/teecfg /teecfg emmc defaults slotselect
+/dev/block/by-name/vbmeta /vbmeta emmc defaults slotselect
+/dev/block/by-name/vbmeta_system /vbmeta_system emmc defaults slotselect
+/dev/block/by-name/vbmeta_vendor /vbmeta_vendor emmc defaults slotselect
+/dev/block/by-name/dtbo /dtbo emmc defaults slotselect
+/dev/block/by-name/l_ldsp /ltedsp emmc defaults slotselect
+/dev/block/by-name/l_gdsp /ltegdsp emmc defaults slotselect
+/dev/block/by-name/l_agdsp /lteagdsp emmc defaults slotselect
+/dev/block/by-name/l_cdsp /ltecdsp emmc defaults slotselect
+/dev/block/by-name/l_modem /ltemodem emmc defaults slotselect
+/dev/block/by-name/l_fixnv1 /ltefixnv1 emmc defaults defaults
+/dev/block/by-name/l_fixnv2 /ltefixnv2 emmc defaults defaults
+/dev/block/by-name/l_deltanv /ltedeltanv emmc defaults slotselect
+/dev/block/by-name/l_runtimenv1 /lteruntimenv1 emmc defaults defaults
+/dev/block/by-name/l_runtimenv2 /lteruntimenv2 emmc defaults defaults
+/dev/block/by-name/wcnmodem /wcnmodem emmc defaults slotselect
+/dev/block/by-name/gnssmodem /gnssmodem emmc defaults slotselect
+/dev/block/by-name/pm_sys /pmsys emmc defaults slotselect
+/dev/block/by-name/misc /misc emmc defaults defaults
+/dev/block/by-name/boot /boot emmc defaults slotselect
+/dev/block/by-name/persist /persist emmc defaults defaults
+/dev/block/by-name/logo /logo emmc defaults defaults
+/dev/block/by-name/fbootlogo /fbootlogo emmc defaults defaults
+system /system erofs ro wait,avb=vbmeta_system,logical,first_stage_mount,avb_keys=/avb/q-gsi.avbpubkey:/avb/r-gsi.avbpubkey:/avb/s-gsi.avbpubkey,slotselect
+system /system ext4 ro,barrier=1 wait,avb=vbmeta_system,logical,first_stage_mount,avb_keys=/avb/q-gsi.avbpubkey:/avb/r-gsi.avbpubkey:/avb/s-gsi.avbpubkey,slotselect
+system_ext /system_ext erofs ro wait,avb=vbmeta_system,logical,first_stage_mount,slotselect
+vendor /vendor erofs ro wait,avb=vbmeta_vendor,logical,first_stage_mount,slotselect
+odm /odm erofs ro wait,avb=vbmeta_odm,logical,first_stage_mount,slotselect
+product /product erofs ro wait,avb=vbmeta_product,logical,first_stage_mount,slotselect
+vendor_dlkm /vendor_dlkm erofs ro wait,avb=vbmeta_system_ext,logical,first_stage_mount,slotselect
+system_dlkm /system_dlkm erofs ro wait,avb=vbmeta_system_ext,logical,first_stage_mount,slotselect
+/dev/block/by-name/metadata /metadata f2fs nodev,noatime,nosuid wait,formattable,first_stage_mount,check
+/dev/block/by-name/metadata /metadata ext4 nodev,noatime,nosuid,errors=panic wait,formattable,first_stage_mount,check
+/dev/block/by-name/userdata /data f2fs noatime,nosuid,nodev,discard,reserve_root=32768,resgid=1065,inline_xattr,inline_data,inlinecrypt,fsync_mode=nobarrier,atgc latemount,wait,check,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,keydirectory=/metadata/vold/metadata_encryption,reservedsize=128M,checkpoint=fs,formattable
+/dev/block/by-name/cache /cache f2fs noatime,nosuid,nodev,discard wait,check,formattable
+/dev/block/by-name/cache /cache ext4 noatime,nosuid,nodev,nomblk_io_submit,noauto_da_alloc wait,check,formattable
+/dev/block/by-name/prodnv /mnt/vendor ext4 noatime,nosuid,nodev,nomblk_io_submit,noauto_da_alloc wait,check
+/dev/block/mmcblk1p1 /storage/sdcard0 vfat defaults defaults

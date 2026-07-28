@@ -13,24 +13,25 @@ jobs:
     permissions:
       contents: write
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Clean Up Space
+    # 1. Pembersihan Disk Runner Pertama & Utama
+    - name: Clean Up Disk Space
       uses: jlumbroso/free-disk-space@main
       with:
-        tool-cache: false
+        tool-cache: true
         android: true
         dotnet: true
         haskell: true
         large-packages: true
         docker-images: true
+        swap-storage: true
 
+    # 2. Persiapan Lingkungan Sistem
     - name: Initialize Environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 libncurses5-dev libncurses6 x11proto-core-dev libx11-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig
+        sudo apt-get install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 libncurses5-dev libncurses6 x11proto-core-dev libx11-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python3
 
+    # 3. Pemasangan Repo Tool
     - name: Install Repo Tool
       run: |
         mkdir -p ~/bin
@@ -38,31 +39,36 @@ jobs:
         chmod a+rx ~/bin/repo
         echo "$HOME/bin" >> $GITHUB_PATH
 
+    # 4. Inisialisasi Manifest & Sync Source Code
     - name: Initialize Repo & Sync
       run: |
-        mkdir workspace && cd workspace
+        mkdir -p workspace
+        cd workspace
         git config --global user.name "arriRgb31"
         git config --global user.email "febyyusuf12345@gmail.com"
         repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
         repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
-    - name: Clone Device Tree
-      run: |
-        cd workspace
-        git clone https://github.com/arriRgb31/RMX3760.git device/realme/RMX3760
+    # 5. Checkout Device Tree Realme C53
+    - name: Checkout Device Tree
+      uses: actions/checkout@v4
+      with:
+        path: workspace/device/realme/RMX3760
 
+    # 6. Kompilasi Biner TWRP Vendor Boot
     - name: Build TWRP
       run: |
         cd workspace
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
         lunch twrp_RMX3760-eng
-        mka recoveryimage bootimage vendorbootimage -j$(nproc --all)
-        
-        # Pindahkan file .img ke folder khusus di luar out/ agar aman dari masalah permission root
+        mka clean
+        mka vendorbootimage -j$(nproc --all)
+
         mkdir -p output_img
         cp out/target/product/RMX3760/*.img output_img/ || true
 
+    # 7. Pengunggahan Hasil Output
     - name: Upload Recovery Image
       uses: actions/upload-artifact@v4
       with:

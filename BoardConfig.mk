@@ -29,22 +29,18 @@ TARGET_IS_64_BIT := true
 TARGET_USES_64_BIT_BINDER := true
 TARGET_SUPPORTS_64_BIT_APPS := true
 
-# Bootloader & Platform
+# Bootloader & Platform (Sesuai prop.default: ums9230_hulk)
 TARGET_BOOTLOADER_BOARD_NAME := ums9230_hulk
 TARGET_OTA_ASSERT_DEVICE := RMX3760
 TARGET_NO_BOOTLOADER := true
-
 ENABLE_CPUSETS := true
 ENABLE_SCHEDBOOST := true
-
 TARGET_BOARD_PLATFORM := ums9230
 
-# Kernel & Header v4 Setup (Pola Nino088)
+# Kernel & Header v4 Setup
 TARGET_NO_KERNEL := true
 BOARD_RAMDISK_USE_LZ4 := true
-
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
-
 BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8 bootconfig
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_PAGE_SIZE := 4096
@@ -53,7 +49,6 @@ BOARD_RAMDISK_OFFSET := 0x05400000
 BOARD_TAGS_OFFSET := 0x00000100
 BOARD_BOOT_HEADER_VERSION := 4
 BOARD_HEADER_SIZE := 2128
-
 BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
 BOARD_MKBOOTIMG_ARGS += --vendor_cmdline "$(BOARD_VENDOR_CMDLINE)"
 BOARD_MKBOOTIMG_ARGS += --pagesize $(BOARD_PAGE_SIZE) --board ""
@@ -78,41 +73,37 @@ TARGET_NO_RECOVERY := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
 
-# Anti-Rollback Bypasses (Pola Nino088)
+# Anti-Rollback Bypasses
 PLATFORM_SECURITY_PATCH := 2099-12-31
 VENDOR_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
 PLATFORM_VERSION := 15
 PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
 
-# Partitions Size & Filesystems (Sesuai Firmware RMX3760 - Disesuaikan dengan Valid Name AOSP)
+# Partitions Size & Filesystems (Realme C53 Firmware)
 BOARD_FLASH_BLOCK_SIZE := 262144
 BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 104857600
 BOARD_HAS_LARGE_FILESYSTEM := true
 BOARD_BOOTIMAGE_PARTITION_SIZE := 104857600
-
 BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
 BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_VENDOR_DLKMIMAGE_FILE_SYSTEM_TYPE := ext4
-
 TARGET_USERIMAGES_USE_F2FS := true
 TARGET_USERIMAGES_USE_EXT4 := true
-
 BOARD_SUPER_PARTITION_SIZE := 9126805504
 BOARD_SUPER_PARTITION_GROUPS := realme_dynamic_partitions
-# PERBAIKAN: system_dlkm DIBUANG dari daftar ini agar build tidak error!
-BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm
-BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 9122611200 # (BOARD_SUPER_PARTITION_SIZE - 4194304)
+BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm system_dlkm
+BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 9122611200
 
-# Copy Out Paths (Pola Nino088)
+# Copy Out Paths
 TARGET_COPY_OUT_PRODUCT := product
 TARGET_COPY_OUT_SYSTEM_EXT := system_ext
 TARGET_COPY_OUT_VENDOR := vendor
 TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
 
-# Properties
+# Properties Mapping
 TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 
 # Use mke2fs for ext4
@@ -126,7 +117,7 @@ BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
 BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
 BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE := true
 
-# TWRP Main Configuration (Pola Nino088)
+# TWRP Main Configuration
 TW_THEME := portrait_hdpi
 TW_EXTRA_LANGUAGES := true
 TW_INPUT_BLACKLIST := "hbtp_vm"
@@ -155,20 +146,23 @@ TW_INCLUDE_LIBRESETPROP := true
 TWRP_INCLUDE_LOGCAT := true
 TARGET_USES_LOGD := true
 
-# Additional binaries & libraries needed for recovery (Pola Nino088)
-TARGET_RECOVERY_DEVICE_MODULES += \
-    libkeymaster4 \
-    libpuresoftkeymasterdevice
-
-# Decryption & FBE v2 Setup (Pola Nino088)
+# Decryption & FBE v2 Setup (Realme C53 Android 15 - Unisoc UMS9230)
 TW_INCLUDE_CRYPTO := true
 TW_INCLUDE_CRYPTO_FBE := true
 TW_USE_FSCRYPT_POLICY := 2
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
 TW_PREPARE_DATA_MEDIA_EARLY := true
+
+# Relink Shared Libraries untuk Decryption
 TW_RECOVERY_ADDITIONAL_RELINK_LIBRARY_FILES += \
     $(TARGET_OUT_SHARED_LIBRARIES)/libkeymaster4.so \
-    $(TARGET_OUT_SHARED_LIBRARIES)/libpuresoftkeymasterdevice.so
+    $(TARGET_OUT_SHARED_LIBRARIES)/libkeymaster41.so \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libpuresoftkeymasterdevice.so \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libgatekeeper.so
 
-# Target Recovery Kernel Modules Injection
-TARGET_RECOVERY_DEVICE_MODULES += $(wildcard $(DEVICE_PATH)/recovery/root/lib/modules/*.ko)
+# Target Recovery Modules (Crypto Services)
+TARGET_RECOVERY_DEVICE_MODULES += \
+    libkeymaster4 \
+    libkeymaster41 \
+    libpuresoftkeymasterdevice \
+    libgatekeeper
