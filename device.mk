@@ -101,18 +101,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/bin/hw/android.hardware.boot-service.default_recovery:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/hw/android.hardware.boot-service.default_recovery \
     $(LOCAL_PATH)/recovery/root/system/bin/hw/vendor.sprd.hardware.boot-service.default_recovery:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/hw/vendor.sprd.hardware.boot-service.default_recovery
 
-# Prebuilt Shared Libraries Vendor (lib64)
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot-V1-ndk.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot-V1-ndk.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot@1.0.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot@1.0.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot@1.1.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot@1.1.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/libboot_control_client.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libboot_control_client.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/libboot_control_client_unisoc.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libboot_control_client_unisoc.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/libproduction_client_unisoc.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libproduction_client_unisoc.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.boot@1.2.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/vendor.sprd.hardware.boot@1.2.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so
-
 # Injeksi Seluruh Modul Kernel Asli secara Otomatis
 PRODUCT_COPY_FILES += \
     $(foreach f,$(wildcard $(LOCAL_PATH)/recovery/root/lib/modules/*),$(f):$(TARGET_COPY_OUT_RECOVERY)/root/lib/modules/$(notdir $(f)))
