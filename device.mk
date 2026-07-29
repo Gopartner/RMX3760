@@ -99,6 +99,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml \
     $(LOCAL_PATH)/recovery/root/system/bin/create_splloader_dual_slot_byname_path.sh:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/create_splloader_dual_slot_byname_path.sh
 
-# Injeksi Modul Kernel (.ko)
+# Injeksi Seluruh Kernel Modules & Metadata
 PRODUCT_COPY_FILES += \
-    $(foreach f,$(wildcard $(LOCAL_PATH)/recovery/root/lib/modules/*.ko),$(f):$(TARGET_COPY_OUT_RECOVERY)/root/lib/modules/$(notdir $(f)))
+    $(foreach f,$(wildcard $(LOCAL_PATH)/recovery/root/lib/modules/*),\
+        $(f):$(TARGET_COPY_OUT_RECOVERY)/root/lib/modules/$(notdir $(f)))

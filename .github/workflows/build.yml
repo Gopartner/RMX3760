@@ -49,7 +49,7 @@ jobs:
         repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
         repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
-    # 5. Checkout Device Tree Realme C53
+    # 5. Checkout Device Tree Realme C53 ke tempat yang benar
     - name: Checkout Device Tree
       uses: actions/checkout@v4
       with:
@@ -66,7 +66,8 @@ jobs:
         mka vendorbootimage -j$(nproc --all)
 
         mkdir -p output_img
-        cp out/target/product/RMX3760/*.img output_img/ || true
+        cp out/target/product/RMX3760/vendor_boot.img output_img/ || true
+        cp out/target/product/RMX3760/recovery.img output_img/ || true
 
     # 7. Pengunggahan Hasil Output
     - name: Upload Recovery Image
