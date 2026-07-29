@@ -28,7 +28,6 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-
           sudo apt install -y \
             git-core \
             gnupg \
@@ -64,15 +63,12 @@ jobs:
         run: |
           mkdir workspace
           cd workspace
-
           git config --global user.name "arriRgb31"
           git config --global user.email "febyyusuf12345@gmail.com"
-
           repo init \
             --depth=1 \
             -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
             -b twrp-12.1
-
           repo sync \
             -c \
             --force-sync \
@@ -85,7 +81,7 @@ jobs:
         with:
           path: workspace/device/realme/RMX3760
 
-     - name: Set Python Default
+      - name: Set Python Default
         run: |
           sudo ln -sf /usr/bin/python3 /usr/bin/python
 
@@ -96,17 +92,14 @@ jobs:
           rm -rf out
           source build/envsetup.sh
           lunch twrp_RMX3760-eng
-
           # [Langkah Pemaksa] Membuat biner bootconfig mentah secara instan sebelum paking utama
           mkdir -p out/target/product/RMX3760/
           echo -e "androidboot.hardware=ums9230_hulk\nandroidboot.dtbo_idx=0" > out/target/product/RMX3760/vendor-bootconfig.img
-
           mka vendorbootimage -j$(nproc)
 
       - name: Collect Images
         run: |
           mkdir -p workspace/output
-
           cp workspace/out/target/product/RMX3760/vendor_boot.img workspace/output/ || true
           cp workspace/out/target/product/RMX3760/recovery.img workspace/output/ || true
 
