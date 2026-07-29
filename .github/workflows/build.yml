@@ -98,6 +98,22 @@ jobs:
         with:
           path: workspace/device/realme/RMX3760
 
+      - name: Audit libcxx
+        run: |
+          cd workspace
+
+          echo "===== external/libcxx ====="
+          git -C external/libcxx log --oneline -5 || true
+
+          echo "===== search verbose_abort ====="
+          grep -R "__libcpp_verbose_abort" external/libcxx 2>/dev/null || true
+
+          echo "===== search _LIBCPP_AVAILABILITY_VERBOSE_ABORT ====="
+          grep -R "_LIBCPP_AVAILABILITY_VERBOSE_ABORT" external/libcxx 2>/dev/null || true
+
+          echo "===== search verbose_abort.h ====="
+          find external/libcxx -iname "*verbose*" || true
+
       - name: Build Recovery
         run: |
           cd workspace
