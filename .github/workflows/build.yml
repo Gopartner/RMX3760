@@ -80,37 +80,26 @@ jobs:
             --no-tags \
             -j$(nproc)
 
-      - name: Replace external/libcxx (Android 15)
-        run: |
-          cd workspace
-
-          rm -rf external/libcxx
-
-          git clone \
-            --depth=1 \
-            -b android-15.0.0_r15 \
-            https://android.googlesource.com/platform/external/libcxx \
-            external/libcxx
-
-          echo "===== external/libcxx ====="
-          git -C external/libcxx log --oneline -5
-
       - name: Checkout Device Tree
         uses: actions/checkout@v4
         with:
           path: workspace/device/realme/RMX3760
 
+     - name: Set Python Default
+        run: |
+          sudo ln -sf /usr/bin/python3 /usr/bin/python
+
       - name: Build Recovery
         run: |
           cd workspace
-
           export ALLOW_MISSING_DEPENDENCIES=true
-
           rm -rf out
-
           source build/envsetup.sh
-
           lunch twrp_RMX3760-eng
+
+          # [Langkah Pemaksa] Membuat biner bootconfig mentah secara instan sebelum paking utama
+          mkdir -p out/target/product/RMX3760/
+          echo -e "androidboot.hardware=ums9230_hulk\nandroidboot.dtbo_idx=0" > out/target/product/RMX3760/vendor-bootconfig.img
 
           mka vendorbootimage -j$(nproc)
 

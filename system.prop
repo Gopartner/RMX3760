@@ -6,6 +6,8 @@
 ro.board.platform=ums9230
 ro.product.board=ums9230_hulk
 ro.product.hardware=ums9230_hulk
+ro.boot.hardware=ums9230_hulk
+ro.boot.dtbo_idx=0
 
 # Encryption / FBE v2 Setup
 ro.crypto.state=encrypted

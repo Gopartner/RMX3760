@@ -41,7 +41,7 @@ TARGET_BOARD_PLATFORM := ums9230
 TARGET_NO_KERNEL := true
 BOARD_RAMDISK_USE_LZ4 := true
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
-BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8 bootconfig
+BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8 bootconfig bootconfig
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_PAGE_SIZE := 4096
 BOARD_KERNEL_OFFSET := 0x00008000
@@ -60,9 +60,9 @@ TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
 
 # Android 15 Vendor Bootconfig
-BOARD_BOOTCONFIG += \
-    androidboot.hardware=ums9230_hulk \
-    androidboot.dtbo_idx=0
+BOARD_RAMDISK_BOOTCONFIG := true
+BOARD_BOOTCONFIG := androidboot.hardware=ums9230_hulk androidboot.dtbo_idx=0
+BOARD_MKBOOTIMG_ARGS += --vendor_bootconfig $(PRODUCT_OUT)/vendor-bootconfig.img
 
 # AVB Configuration
 BOARD_AVB_ENABLE := true
@@ -162,17 +162,3 @@ TW_INCLUDE_CRYPTO_FBE := true
 TW_USE_FSCRYPT_POLICY := 2
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
 TW_PREPARE_DATA_MEDIA_EARLY := true
-
-# Relink Shared Libraries untuk Decryption
-TW_RECOVERY_ADDITIONAL_RELINK_LIBRARY_FILES += \
-    $(TARGET_OUT_SHARED_LIBRARIES)/libkeymaster4.so \
-    $(TARGET_OUT_SHARED_LIBRARIES)/libkeymaster41.so \
-    $(TARGET_OUT_SHARED_LIBRARIES)/libpuresoftkeymasterdevice.so \
-    $(TARGET_OUT_SHARED_LIBRARIES)/libgatekeeper.so
-
-# Target Recovery Modules (Crypto Services)
-TARGET_RECOVERY_DEVICE_MODULES += \
-    libkeymaster4 \
-    libkeymaster41 \
-    libpuresoftkeymasterdevice \
-    libgatekeeper
