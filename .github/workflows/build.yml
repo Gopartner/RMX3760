@@ -89,6 +89,30 @@ jobs:
           https://android.googlesource.com/platform/hardware/interfaces \
           hardware/interfaces
 
+
+          - name: Locate Boot HAL
+  run: |
+    cd workspace
+
+    echo "========== Android.bp =========="
+    grep -R "android.hardware.boot@1.0" -n . || true
+
+    echo
+    echo "========== cc_library_shared =========="
+    grep -R "name: *\"android.hardware.boot@1.0\"" -n . || true
+
+    echo
+    echo "========== recovery =========="
+    grep -R "android.hardware.boot" bootable/recovery -n || true
+
+    echo
+    echo "========== interfaces =========="
+    grep -R "android.hardware.boot" hardware/interfaces -n || true
+
+    echo
+    echo "========== hidl =========="
+    grep -R "android.hardware.boot" system/libhidl -n || true
+
     - name: Checkout Device Tree
       uses: actions/checkout@v4
       with:
