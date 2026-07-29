@@ -80,39 +80,25 @@ jobs:
             --no-tags \
             -j$(nproc)
 
-      - name: Locate Boot HAL and libc++
+      - name: Replace external/libcxx (Android 15)
         run: |
           cd workspace
 
-           echo "===== Boot HAL ====="
-           find . -name "android.hardware.boot@1.0*" -o -name "android.hardware.boot@1.1*" -o -name "android.hardware.boot@1.2*"
+          rm -rf external/libcxx
 
-           echo "===== libc++ ====="
-           find . -name "libc++*.so" -o -name "libc++*.a"
+          git clone \
+            --depth=1 \
+            -b android-15.0.0_r15 \
+            https://android.googlesource.com/platform/external/libcxx \
+            external/libcxx
 
-           echo "===== verbose_abort ====="
-           grep -R "_LIBCPP_AVAILABILITY_VERBOSE_ABORT" external/libcxx || true 
+          echo "===== external/libcxx ====="
+          git -C external/libcxx log --oneline -5
 
       - name: Checkout Device Tree
         uses: actions/checkout@v4
         with:
           path: workspace/device/realme/RMX3760
-
-      - name: Audit libcxx
-        run: |
-          cd workspace
-
-          echo "===== external/libcxx ====="
-          git -C external/libcxx log --oneline -5 || true
-
-          echo "===== search verbose_abort ====="
-          grep -R "__libcpp_verbose_abort" external/libcxx 2>/dev/null || true
-
-          echo "===== search _LIBCPP_AVAILABILITY_VERBOSE_ABORT ====="
-          grep -R "_LIBCPP_AVAILABILITY_VERBOSE_ABORT" external/libcxx 2>/dev/null || true
-
-          echo "===== search verbose_abort.h ====="
-          find external/libcxx -iname "*verbose*" || true
 
       - name: Build Recovery
         run: |
