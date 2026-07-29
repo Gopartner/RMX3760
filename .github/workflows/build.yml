@@ -80,18 +80,18 @@ jobs:
             --no-tags \
             -j$(nproc)
 
-  - name: Locate Boot HAL and libc++
-  run: |
-    cd workspace
+      - name: Locate Boot HAL and libc++
+        run: |
+          cd workspace
 
-    echo "===== Boot HAL ====="
-    find . -name "android.hardware.boot@1.0*" -o -name "android.hardware.boot@1.1*" -o -name "android.hardware.boot@1.2*"
+           echo "===== Boot HAL ====="
+           find . -name "android.hardware.boot@1.0*" -o -name "android.hardware.boot@1.1*" -o -name "android.hardware.boot@1.2*"
 
-    echo "===== libc++ ====="
-    find . -name "libc++*.so" -o -name "libc++*.a"
+           echo "===== libc++ ====="
+           find . -name "libc++*.so" -o -name "libc++*.a"
 
-    echo "===== verbose_abort ====="
-    grep -R "_LIBCPP_AVAILABILITY_VERBOSE_ABORT" external/libcxx || true 
+           echo "===== verbose_abort ====="
+           grep -R "_LIBCPP_AVAILABILITY_VERBOSE_ABORT" external/libcxx || true 
 
       - name: Checkout Device Tree
         uses: actions/checkout@v4
