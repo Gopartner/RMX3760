@@ -70,15 +70,15 @@ AB_OTA_POSTINSTALL_CONFIG += \
 
 # Boot Control HAL 1.2 (Unisoc UMS9230)
 PRODUCT_PACKAGES += \
-    android.hardware.boot@1.2-impl-recovery \
-    android.hardware.boot@1.2-impl \
-    android.hardware.boot@1.2-service
+#    android.hardware.boot@1.2-impl-recovery \
+#    android.hardware.boot@1.2-impl \
+#   android.hardware.boot@1.2-service
 
-PRODUCT_PACKAGES += \
-    bootctrl.ums9230 \
-    bootctrl.ums9230.recovery
+#PRODUCT_PACKAGES += \
+#    bootctrl.ums9230 \
+#    bootctrl.ums9230.recovery
 
-PRODUCT_PACKAGES_DEBUG += \
+#PRODUCT_PACKAGES_DEBUG += \
     bootctrl \
     update_engine_client
 
