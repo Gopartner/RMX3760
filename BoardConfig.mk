@@ -56,9 +56,13 @@ BOARD_MKBOOTIMG_ARGS += --kernel_offset $(BOARD_KERNEL_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_TAGS_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
-
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
+
+# Android 15 Vendor Bootconfig
+BOARD_BOOTCONFIG += \
+    androidboot.hardware=ums9230_hulk \
+    androidboot.dtbo_idx=0
 
 # AVB Configuration
 BOARD_AVB_ENABLE := true
