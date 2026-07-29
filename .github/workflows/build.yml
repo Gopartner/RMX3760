@@ -10,6 +10,7 @@ jobs:
   build:
     name: Build TWRP by Actions
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
 
@@ -29,10 +30,25 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          git-core gnupg flex bison build-essential zip curl \
-          zlib1g-dev libc6-dev-i386 libncurses5-dev libncurses6 \
-          x11proto-core-dev libx11-dev libgl1-mesa-dev \
-          libxml2-utils xsltproc unzip fontconfig python3
+          git-core \
+          gnupg \
+          flex \
+          bison \
+          build-essential \
+          zip \
+          curl \
+          zlib1g-dev \
+          libc6-dev-i386 \
+          libncurses5-dev \
+          libncurses6 \
+          x11proto-core-dev \
+          libx11-dev \
+          libgl1-mesa-dev \
+          libxml2-utils \
+          xsltproc \
+          unzip \
+          fontconfig \
+          python3
 
     - name: Install Repo Tool
       run: |
@@ -49,46 +65,34 @@ jobs:
         git config --global user.name "arriRgb31"
         git config --global user.email "febyyusuf12345@gmail.com"
 
-        repo init --depth=1 \
+        repo init \
+          --depth=1 \
           -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
           -b twrp-12.1
 
-        repo sync -c -j$(nproc) \
+        repo sync \
+          -c \
+          -j$(nproc --all) \
           --force-sync \
           --no-clone-bundle \
           --no-tags
+
+    - name: Override Hardware Interfaces (Android 15 TEST)
+      run: |
+        cd workspace
+
+        rm -rf hardware/interfaces
+
+        git clone \
+          --depth=1 \
+          --branch android-15.0.0_r1 \
+          https://android.googlesource.com/platform/hardware/interfaces \
+          hardware/interfaces
 
     - name: Checkout Device Tree
       uses: actions/checkout@v4
       with:
         path: workspace/device/realme/RMX3760
-
-    ####################################################################
-    # DEBUG
-    ####################################################################
-
-    - name: Debug Boot HAL
-      run: |
-        cd workspace
-
-        echo "========== bootable/recovery =========="
-        grep -R "android.hardware.boot" bootable/recovery -n || true
-
-        echo
-        echo "========== hardware =========="
-        grep -R "android.hardware.boot" hardware -n || true
-
-        echo
-        echo "========== system =========="
-        grep -R "android.hardware.boot" system -n || true
-
-        echo
-        echo "========== Android.bp =========="
-        find bootable/recovery -name Android.bp -exec sed -n '1,250p' {} \;
-
-    ####################################################################
-    # BUILD
-    ####################################################################
 
     - name: Build TWRP
       run: |
@@ -102,7 +106,7 @@ jobs:
 
         mka clean
 
-        mka vendorbootimage -j$(nproc)
+        mka vendorbootimage -j$(nproc --all)
 
         mkdir -p output_img
 
