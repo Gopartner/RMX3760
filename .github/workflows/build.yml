@@ -79,7 +79,7 @@ jobs:
             --no-tags \
             -j$(nproc)
 
-               - name: Find Boot HAL Source
+      - name: Find Boot HAL Source
         run: |
           cd workspace
 
@@ -94,12 +94,19 @@ jobs:
           echo "===== android.hardware.boot ====="
           grep -R -n "android.hardware.boot" bootable/recovery || true
 
+      - name: Stop After Inspection
+        run: |
+          echo "Inspection complete."
+          exit 0
+
       - name: Checkout Device Tree
+        if: false
         uses: actions/checkout@v4
         with:
           path: workspace/device/realme/RMX3760
 
       - name: Build Recovery
+        if: false
         run: |
           cd workspace
 
@@ -114,6 +121,7 @@ jobs:
           mka vendorbootimage -j$(nproc)
 
       - name: Collect Images
+        if: false
         run: |
           mkdir -p workspace/output
 
@@ -121,6 +129,7 @@ jobs:
           cp workspace/out/target/product/RMX3760/recovery.img workspace/output/ || true
 
       - name: Upload Images
+        if: false
         uses: actions/upload-artifact@v4
         with:
           name: TWRP_RMX3760
