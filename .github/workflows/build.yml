@@ -79,51 +79,25 @@ jobs:
             --no-tags \
             -j$(nproc)
 
+               - name: Find Boot HAL Source
+        run: |
+          cd workspace
+
+          echo "===== IBootControl ====="
+          grep -R -n "IBootControl" bootable/recovery || true
+
+          echo
+          echo "===== getService ====="
+          grep -R -n "getService" bootable/recovery || true
+
+          echo
+          echo "===== android.hardware.boot ====="
+          grep -R -n "android.hardware.boot" bootable/recovery || true
+
       - name: Checkout Device Tree
         uses: actions/checkout@v4
         with:
           path: workspace/device/realme/RMX3760
-
-      ####################################################################
-      # SOURCE INSPECTION
-      ####################################################################
-
-      - name: Inspect Boot HAL Sources
-        run: |
-          cd workspace
-
-          echo "=============================="
-          echo "BOOT HAL MODULES"
-          echo "=============================="
-
-          grep -R 'name: "android.hardware.boot@1.0"' -n . || true
-          grep -R 'name: "android.hardware.boot@1.1"' -n . || true
-          grep -R 'name: "android.hardware.boot@1.2"' -n . || true
-
-          echo
-          echo "=============================="
-          echo "BOOTCTRL"
-          echo "=============================="
-
-          grep -R "bootctrl" -n hardware device system bootable || true
-
-          echo
-          echo "=============================="
-          echo "LIBCPP"
-          echo "=============================="
-
-          grep -R "libc++" hardware/interfaces -n || true
-
-          echo
-          echo "=============================="
-          echo "VERBOSE_ABORT"
-          echo "=============================="
-
-          grep -R "__libcpp_verbose_abort" . || true
-
-      ####################################################################
-      # BUILD
-      ####################################################################
 
       - name: Build Recovery
         run: |
@@ -139,61 +113,6 @@ jobs:
 
           mka vendorbootimage -j$(nproc)
 
-      ####################################################################
-      # ELF ANALYSIS
-      ####################################################################
-
-      - name: Analyze Built Libraries
-        run: |
-          cd workspace
-
-          echo "=============================="
-          echo "BOOT HAL"
-          echo "=============================="
-
-          find out -name "android.hardware.boot*.so"
-
-          echo
-          LIB=$(find out -name "android.hardware.boot@1.0.so" | head -1)
-
-          echo "$LIB"
-
-          if [ -f "$LIB" ]; then
-
-            echo
-            echo "=============================="
-            echo "FILE"
-            echo "=============================="
-
-            file "$LIB"
-
-            echo
-            echo "=============================="
-            echo "NEEDED"
-            echo "=============================="
-
-            readelf -d "$LIB"
-
-            echo
-            echo "=============================="
-            echo "UNDEFINED"
-            echo "=============================="
-
-            nm -D "$LIB" | grep " U "
-
-            echo
-            echo "=============================="
-            echo "VERBOSE"
-            echo "=============================="
-
-            nm -D "$LIB" | grep verbose || true
-
-          fi
-
-      ####################################################################
-      # OUTPUT
-      ####################################################################
-
       - name: Collect Images
         run: |
           mkdir -p workspace/output
@@ -206,10 +125,3 @@ jobs:
         with:
           name: TWRP_RMX3760
           path: workspace/output/*.img
-
-      - name: Upload ELF
-        uses: actions/upload-artifact@v4
-        with:
-          name: BootHAL_ELF
-          path: |
-            workspace/out/**/*.so
