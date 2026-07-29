@@ -80,21 +80,18 @@ jobs:
             --no-tags \
             -j$(nproc)
 
-      - name: Fetch Android 15 Recovery Source
-        run: |
-          git clone --depth=1 \
-            -b android-15.0.0_r15 \
-            https://android.googlesource.com/platform/bootable/recovery \
-            /tmp/recovery15
+  - name: Locate Boot HAL and libc++
+  run: |
+    cd workspace
 
-      - name: Overlay Android 15 Recovery
-        run: |
-          cp /tmp/recovery15/partitionmanager.cpp \
-            workspace/bootable/recovery/
+    echo "===== Boot HAL ====="
+    find . -name "android.hardware.boot@1.0*" -o -name "android.hardware.boot@1.1*" -o -name "android.hardware.boot@1.2*"
 
-          rsync -a --delete \
-            /tmp/recovery15/update_verifier/ \
-            workspace/bootable/recovery/update_verifier/
+    echo "===== libc++ ====="
+    find . -name "libc++*.so" -o -name "libc++*.a"
+
+    echo "===== verbose_abort ====="
+    grep -R "_LIBCPP_AVAILABILITY_VERBOSE_ABORT" external/libcxx || true 
 
       - name: Checkout Device Tree
         uses: actions/checkout@v4
