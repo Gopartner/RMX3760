@@ -1,0 +1,11 @@
+# Flags khusus untuk Antarmuka TWRP (Realme C53)
+/system           erofs     /dev/block/mapper/system            flags=display="System";logical;slotselect
+/system_ext       erofs     /dev/block/mapper/system_ext        flags=display="System EXT";logical;slotselect
+/vendor           erofs     /dev/block/mapper/vendor            flags=display="Vendor";logical;slotselect
+/product          erofs     /dev/block/mapper/product           flags=display="Product";logical;slotselect
+/odm              erofs     /dev/block/mapper/odm               flags=display="ODM";logical;slotselect
+/vendor_dlkm      erofs     /dev/block/mapper/vendor_dlkm       flags=display="Vendor DLKM";logical;slotselect
+/system_dlkm      erofs     /dev/block/mapper/system_dlkm       flags=display="System DLKM";logical;slotselect
+
+# Storage Tambahan
+/external_sd      vfat      /dev/block/mmcblk1p1                flags=display="MicroSD";storage;wipeui;removable

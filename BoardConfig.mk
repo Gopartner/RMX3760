@@ -62,7 +62,6 @@ TARGET_KERNEL_HEADER_ARCH := arm64
 # Android 15 Vendor Bootconfig
 BOARD_RAMDISK_BOOTCONFIG := true
 BOARD_BOOTCONFIG := androidboot.hardware=ums9230_hulk androidboot.dtbo_idx=0
-BOARD_MKBOOTIMG_ARGS += --vendor_bootconfig $(PRODUCT_OUT)/vendor-bootconfig.img
 
 # AVB Configuration
 BOARD_AVB_ENABLE := true
@@ -76,6 +75,7 @@ BOARD_BUILD_SYSTEM_ROOT_IMAGE := false
 TARGET_NO_RECOVERY := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
+TARGET_RECOVERY_FLAGS := $(DEVICE_PATH)/recovery/root/system/etc/twrp.flags
 
 # Anti-Rollback Bypasses
 PLATFORM_SECURITY_PATCH := 2099-12-31
@@ -85,6 +85,7 @@ PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
 
 # Bypass ELF check for PRODUCT_COPY_FILES (Kernel Modules .ko & Prebuilts)
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
+BUILD_BROKEN_PREBUILT_ELF_FILES := true
 
 # Partitions Size & Filesystems (Realme C53 Firmware)
 BOARD_FLASH_BLOCK_SIZE := 262144
@@ -101,7 +102,7 @@ TARGET_USERIMAGES_USE_F2FS := true
 TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_SUPER_PARTITION_SIZE := 9126805504
 BOARD_SUPER_PARTITION_GROUPS := realme_dynamic_partitions
-BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm 
+BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm
 BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 9122611200
 BOARD_USES_VENDOR_DLKM := true
 
@@ -138,7 +139,7 @@ RECOVERY_SDCARD_ON_DATA := true
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/sprd_backlight/brightness"
 TW_MAX_BRIGHTNESS := 255
 TW_DEFAULT_BRIGHTNESS := 150
-TW_MTP_DEVICE := /dev/mtp_usb
+TW_MTP_DEVICE := "/dev/mtp_usb"
 TW_EXCLUDE_TWRPAPP := true
 TW_EXCLUDE_APEX := true
 TW_EXCLUDE_DEFAULT_USB_INIT := true
@@ -146,11 +147,17 @@ TW_NO_SCREEN_BLANK := true
 TW_NO_USB_STORAGE := true
 TW_USE_MODEL_HARDWARE_ID_FOR_DEVICE_ID := true
 TW_DEVICE_VERSION := RMX3760_Nino
+
+# Modul Kernel (Unisoc UMS9230 Hulk)
 TW_LOAD_VENDOR_BOOT_MODULES := true
+BOARD_RECOVERY_KERNEL_MODULES_LOAD := $(wildcard $(DEVICE_PATH)/recovery/root/lib/modules/*.ko)
+
+# Fitur Tambahan
 TW_INCLUDE_FASTBOOTD := true
 TW_INCLUDE_RESETPROP := true
 TW_INCLUDE_REPACKTOOLS := true
 TW_INCLUDE_LIBRESETPROP := true
+TW_HAS_EDL_MODE := true
 
 # For Debugging
 TWRP_INCLUDE_LOGCAT := true

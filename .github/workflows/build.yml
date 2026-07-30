@@ -92,9 +92,6 @@ jobs:
           rm -rf out
           source build/envsetup.sh
           lunch twrp_RMX3760-eng
-          # [Langkah Pemaksa] Membuat biner bootconfig mentah secara instan sebelum paking utama
-          mkdir -p out/target/product/RMX3760/
-          echo -e "androidboot.hardware=ums9230_hulk\nandroidboot.dtbo_idx=0" > out/target/product/RMX3760/vendor-bootconfig.img
           mka vendorbootimage -j$(nproc)
 
       - name: Collect Images
