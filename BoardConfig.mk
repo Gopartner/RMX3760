@@ -148,9 +148,14 @@ TW_NO_USB_STORAGE := true
 TW_USE_MODEL_HARDWARE_ID_FOR_DEVICE_ID := true
 TW_DEVICE_VERSION := RMX3760_Nino
 
-# Modul Kernel (Unisoc UMS9230 Hulk)
+# Memerintahkan TWRP untuk memuat modul dari vendor_boot
 TW_LOAD_VENDOR_BOOT_MODULES := true
-BOARD_RECOVERY_KERNEL_MODULES_LOAD := $(wildcard $(DEVICE_PATH)/recovery/root/lib/modules/*.ko)
+
+# Memaksa compiler mengikuti urutan asli yang valid dari file teks
+BOARD_RECOVERY_KERNEL_MODULES_LOAD := $(shell cat $(DEVICE_PATH)/recovery/root/lib/modules/modules.load.recovery)
+
+# Memasukkan semua file biner modul fisik ke dalam ramdisk recovery
+BOARD_RECOVERY_KERNEL_MODULES := $(wildcard $(DEVICE_PATH)/recovery/root/lib/modules/*.ko)
 
 # Fitur Tambahan
 TW_INCLUDE_FASTBOOTD := true
