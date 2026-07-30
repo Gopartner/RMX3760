@@ -174,9 +174,3 @@ TW_INCLUDE_CRYPTO_FBE := true
 TW_USE_FSCRYPT_POLICY := 2
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
 TW_PREPARE_DATA_MEDIA_EARLY := true
-
-# Paksa timpa biner TWRP dengan biner original Android 15 Realme di akhir proses build
-PRODUCT_COPY_FILES += \
-    $(DEVICE_PATH)/recovery/root/system/lib64/libc++.so:$(TARGET_RECOVERY_ROOT_OUT)/system/lib64/libc++.so \
-    $(DEVICE_PATH)/recovery/root/system/lib64/libc.so:$(TARGET_RECOVERY_ROOT_OUT)/system/lib64/libc.so \
-    $(DEVICE_PATH)/recovery/root/system/lib64/libm.so:$(TARGET_RECOVERY_ROOT_OUT)/system/lib64/libm.so

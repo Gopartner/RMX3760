@@ -105,3 +105,8 @@ PRODUCT_COPY_FILES += \
     $(foreach f,$(wildcard $(LOCAL_PATH)/recovery/root/lib/modules/*),$(f):$(TARGET_COPY_OUT_RECOVERY)/root/lib/modules/$(notdir $(f))) \
     $(LOCAL_PATH)/bootconfig:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/bootconfig \
     $(LOCAL_PATH)/bootconfig:$(TARGET_COPY_OUT_RECOVERY)/root/bootconfig
+# realme
+PRODUCT_PACKAGES += \
+    libc++_realme \
+    libc_realme \
+    libm_realme
