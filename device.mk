@@ -100,11 +100,11 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc \
     $(LOCAL_PATH)/recovery/root/system/etc/init/servicemanager.recovery.rc:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/init/servicemanager.recovery.rc
 
-# Injeksi Kernel Modules & Bootconfig
+# Injeksi Bootconfig Fisik (Hapus baris foreach kernel modules di atasnya)
 PRODUCT_COPY_FILES += \
-    $(foreach f,$(wildcard $(LOCAL_PATH)/recovery/root/lib/modules/*),$(f):$(TARGET_COPY_OUT_RECOVERY)/root/lib/modules/$(notdir $(f))) \
     $(LOCAL_PATH)/bootconfig:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/bootconfig \
     $(LOCAL_PATH)/bootconfig:$(TARGET_COPY_OUT_RECOVERY)/root/bootconfig
+
 # realme
 PRODUCT_PACKAGES += \
     libc++_realme \
