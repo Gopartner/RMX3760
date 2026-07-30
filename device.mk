@@ -101,7 +101,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/etc/init/android.hardware.boot-service.default_recovery.rc:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/init/android.hardware.boot-service.default_recovery.rc \
     $(LOCAL_PATH)/recovery/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc \
     $(LOCAL_PATH)/recovery/root/system/etc/init/servicemanager.recovery.rc:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/init/servicemanager.recovery.rc \
-    $(LOCAL_PATH)/recovery/root/system/bin/fastbootd:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/fastbootd \
 
 # Injeksi Seluruh Kernel Modules & Metadata
 PRODUCT_COPY_FILES += \
