@@ -91,26 +91,24 @@ PRODUCT_PACKAGES += \
     android.hardware.fastboot@1.0-impl-mock \
     android.hardware.fastboot@1.0-impl-mock.recovery
 
-# VINTF Manifests & Non-ELF Scripts (Hanya gunakan varian kustom Unisoc Sprd untuk menghindari tabrakan service)
+# VINTF Manifests & Non-ELF Scripts (Gunakan varian Unisoc Sprd)
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml \
     $(LOCAL_PATH)/recovery/root/system/bin/create_splloader_dual_slot_byname_path.sh:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/create_splloader_dual_slot_byname_path.sh \
     $(LOCAL_PATH)/recovery/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc \
     $(LOCAL_PATH)/recovery/root/system/etc/init/servicemanager.recovery.rc:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/init/servicemanager.recovery.rc
 
-# Injeksi Bootconfig Fisik Resmi (Keputusan Tetap)
+# INJEKSI PUSTAKA BAAWAN (Gua balikin biar gak crash libc++)
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/recovery/root/system/lib64/libc++.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libc++.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/libc.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libc.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/libm.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libm.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/hw/android.hardware.boot@1.0.so
+
+# Injeksi Bootconfig & File Biner system/lib64/
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/bootconfig:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/bootconfig \
-    $(LOCAL_PATH)/bootconfig:$(TARGET_COPY_OUT_RECOVERY)/root/bootconfig
-
-# FIX GIST: Alihkan Arah Target Seluruh Pustaka Boot HAL 1.2 yang CLEAN Langsung ke system/lib64/
-PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/bootconfig:$(TARGET_COPY_OUT_RECOVERY)/root/bootconfig \
+    $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot@1.0.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot@1.0.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot@1.2.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot@1.2.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.boot@1.2.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/vendor.sprd.hardware.boot@1.2.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so
-
-# Injeksi Seluruh Kernel Modules Terdaftar
-PRODUCT_COPY_FILES += \
-    $(foreach f,$(wildcard $(LOCAL_PATH)/recovery/root/lib/modules/*),\
-        $(f):$(TARGET_COPY_OUT_RECOVERY)/root/lib/modules/$(notdir $(f)))
-
