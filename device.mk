@@ -68,16 +68,29 @@ AB_OTA_POSTINSTALL_CONFIG += \
     POSTINSTALL_OPTIONAL_system=true
 
 # Boot Control HAL 1.2 (Unisoc UMS9230)
+# Follows the UMIDIGI A15C (UMS9230 family) TWRP 12.1 tree for the build
+# closure. Module names verified against the actual CI manifest repos
+# (LineageOS android_hardware_interfaces lineage-19.1 boot/1.2/default/Android.bp):
+# only android.hardware.boot@1.2-impl (stem android.hardware.boot@1.0-impl-1.2,
+# recovery_available) and android.hardware.boot@1.2-service exist.
+# The A15C "android.hardware.boot@1.2-impl-recovery" entry names a module that
+# does not exist anywhere in the manifest and is therefore dropped (it would
+# be silently skipped under ALLOW_MISSING_DEPENDENCIES anyway).
+# bootctrl.ums9230(.recovery) are kept for A15C parity; no manifest repo
+# provides them, so they are no-ops at build time. Runtime A/B boot control is
+# served by the STOCK passthrough impl hw/android.hardware.boot@1.0-impl-1.2.so
+# (wholesale-copied from the Android 15 vendor_boot, self-contained Unisoc
+# boot control, linked against the stock libc++/libc/libm trio).
+# The stock Android 15 AIDL boot service
+# (vendor.sprd.hardware.boot-service.default_recovery) is handled separately
+# via its rc + vintf manifest below.
 PRODUCT_PACKAGES += \
-#    android.hardware.boot@1.2-impl-recovery \
-#    android.hardware.boot@1.2-impl \
-#   android.hardware.boot@1.2-service
+    android.hardware.boot@1.2-impl \
+    android.hardware.boot@1.2-service \
+    bootctrl.ums9230 \
+    bootctrl.ums9230.recovery
 
-#PRODUCT_PACKAGES += \
-#    bootctrl.ums9230 \
-#    bootctrl.ums9230.recovery
-
-#PRODUCT_PACKAGES_DEBUG += \
+PRODUCT_PACKAGES_DEBUG += \
     bootctrl \
     update_engine_client
 
@@ -89,7 +102,8 @@ PRODUCT_PACKAGES += \
 # Fastbootd
 PRODUCT_PACKAGES += \
     android.hardware.fastboot@1.0-impl-mock \
-    android.hardware.fastboot@1.0-impl-mock.recovery
+    android.hardware.fastboot@1.0-impl-mock.recovery \
+    fastbootd
 
 # VINTF Manifests & Non-ELF Scripts (Gunakan varian Unisoc Sprd)
 PRODUCT_COPY_FILES += \
@@ -98,17 +112,28 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc \
     $(LOCAL_PATH)/recovery/root/system/etc/init/servicemanager.recovery.rc:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/init/servicemanager.recovery.rc
 
-# INJEKSI PUSTAKA BAAWAN (Gua balikin biar gak crash libc++)
+# Stock Android 15 bionic, restored from vb_stock/ramdisk/system/lib64
+# (SHA256-identical). The recovery binary, the stock boot HAL impl
+# (hw/android.hardware.boot@1.0-impl-1.2.so) and the vendor.sprd AIDL boot
+# service resolve libc++/libc/libm against these stock copies in /system/lib64,
+# which keeps the runtime self-consistent and provides __libcpp_verbose_abort
+# (the symbol that the earlier AOSP libc++ did not export, which crashed
+# android.hardware.boot@1.1.so during dynamic linking).
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/lib64/libc++.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libc++.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/libc.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libc.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/libm.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libm.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/hw/android.hardware.boot@1.0.so
+    $(LOCAL_PATH)/recovery/root/system/lib64/libm.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libm.so
 
-# Injeksi Bootconfig & File Biner system/lib64/
+# Bootconfig injection (vendor ramdisk root + recovery ramdisk root)
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/bootconfig:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/bootconfig \
-    $(LOCAL_PATH)/bootconfig:$(TARGET_COPY_OUT_RECOVERY)/root/bootconfig \
-    $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot@1.0.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot@1.0.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot@1.2.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot@1.2.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so
+    $(LOCAL_PATH)/bootconfig:$(TARGET_COPY_OUT_RECOVERY)/root/bootconfig
+
+# Boot HAL client libraries android.hardware.boot@1.0/1.1/1.2 are provisioned
+# by the build: TWRP 12.1 recovery links all three via LOCAL_SHARED_LIBRARIES
+# and, with AB_OTA_UPDATER=true, TWRP_REQUIRED_MODULES bundles the matching
+# @1.0/@1.1/@1.2 boot HAL services into the recovery ramdisk.
+# The previous injection of stock Android 15 @1.0.so/@1.2.so (without the
+# matching @1.1.so) produced the mixed runtime that crashed in
+# __libcpp_verbose_abort on android.hardware.boot@1.1.so; the build closure
+# supplies a self-consistent @1.0/@1.1/@1.2 set instead.
