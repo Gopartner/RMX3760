@@ -174,3 +174,10 @@ TW_INCLUDE_CRYPTO_FBE := true
 TW_USE_FSCRYPT_POLICY := 2
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
 TW_PREPARE_DATA_MEDIA_EARLY := true
+
+# Perbaikan untuk Overriding Commands Target Fastbootd di GitHub Actions
+BUILD_BROKEN_DUP_RULES := true
+
+# Mencegah Linker AOSP Menuntut Simbol Enkripsi Eksternal yang Tidak Eksis
+BOARD_USES_RECOVERY_AS_BOOT := false
+

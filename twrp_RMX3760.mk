@@ -18,27 +18,26 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
 # Virtual A/B OTA Support
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
-# Inherit from RMX3760 device
+# Inherit from RMX3760 device (Gunakan huruf kecil sesuai folder utama)
 $(call inherit-product, device/realme/RMX3760/device.mk)
 
 # Inherit some common TWRP stuff.
 $(call inherit-product, vendor/twrp/config/common.mk)
 
-# Product Identifiers RMX3760
-PRODUCT_DEVICE := RMX3760
-PRODUCT_NAME := twrp_RMX3760
+# Product Identifiers RMX3760 (Diselaraskan dengan bsp compiler AOSP)
+PRODUCT_DEVICE := rmx3760
+PRODUCT_NAME := twrp_rmx3760
 PRODUCT_BRAND := realme
 PRODUCT_MODEL := RMX3760
 PRODUCT_MANUFACTURER := realme
 
 PRODUCT_GMS_CLIENTID_BASE := android-oppo
 
-# Build Properties & Fingerprint (Sesuai prop.default original RMX3760)
+# Build Properties & Fingerprint (Sesuai rish Shizuku RE58C2 & Android 15 Stock)
 PRODUCT_BUILD_PROP_OVERRIDES += \
     PRIVATE_BUILD_DESC="ussi_arm64_full-user 15 AP3A.240905.015.A2 40 release-keys" \
-    TARGET_DEVICE="RMX3760" \
-    PRODUCT_NAME="RMX3760" \
-    PRODUCT_MODEL="RMX3760" \
-    PRODUCT_DEVICE="RMX3760"
+    TARGET_DEVICE="rmx3760" \
+    PRODUCT_NAME="rmx3760" \
+    PRODUCT_MODEL="RMX3760"
 
 BUILD_FINGERPRINT := realme/RMX3760/RE58C2:15/AP3A.240905.015.A2/T.R4T2.1777915050:user/release-keys

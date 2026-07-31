@@ -32,3 +32,8 @@ ro.virtual_ab.enabled=true
 ro.boot.dynamic_partitions=true
 ro.boot.dynamic_partitions_retrofit=false
 ro.build.ab_update=true
+
+# Pemicu Eksternal untuk Meloloskan Inisialisasi Boot HAL 1.2 Unisoc
+ro.boot.slot_suffix=
+ro.recovery.usb.fastbootd=true
+enable_fastbootd=1

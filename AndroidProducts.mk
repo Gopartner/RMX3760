@@ -1,7 +1,7 @@
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/twrp_RMX3760.mk
+    $(LOCAL_DIR)/twrp_rmx3760.mk
 
 COMMON_LUNCH_CHOICES := \
-    twrp_RMX3760-user \
-    twrp_RMX3760-userdebug \
-    twrp_RMX3760-eng
+    twrp_rmx3760-user \
+    twrp_rmx3760-userdebug \
+    twrp_rmx3760-eng

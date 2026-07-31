@@ -7,5 +7,15 @@
 /vendor_dlkm      erofs     /dev/block/mapper/vendor_dlkm       flags=display="Vendor DLKM";logical;slotselect
 /system_dlkm      erofs     /dev/block/mapper/system_dlkm       flags=display="System DLKM";logical;slotselect
 
-# Storage Tambahan
+# Partitions Fisik Utama (Wajib untuk Backup & Akses Penyimpanan)
+/boot             emmc      /dev/block/by-name/boot             flags=display="Boot";backup=1;flashimg=1;slotselect
+/init_boot        emmc      /dev/block/by-name/init_boot        flags=display="Init Boot";backup=1;flashimg=1;slotselect
+/dtbo             emmc      /dev/block/by-name/dtbo             flags=display="DTBO";backup=1;flashimg=1;slotselect
+/vendor_boot      emmc      /dev/block/by-name/vendor_boot      flags=display="Vendor Boot";backup=1;flashimg=1;slotselect
+/vbmeta           emmc      /dev/block/by-name/vbmeta           flags=display="VBMeta";backup=1;flashimg=1;slotselect
+/vbmeta_vendor    emmc      /dev/block/by-name/vbmeta_vendor    flags=display="VBMeta Vendor";backup=1;slotselect
+/metadata         ext4      /dev/block/by-name/metadata         flags=display="Metadata"
+/userdata         f2fs      /dev/block/by-name/userdata         flags=display="Userdata"
+
+# Storage Removable (Punya Lu yang Gua Balikin)
 /external_sd      vfat      /dev/block/mmcblk1p1                flags=display="MicroSD";storage;wipeui;removable
