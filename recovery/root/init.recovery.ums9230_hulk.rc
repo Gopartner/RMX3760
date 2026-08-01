@@ -1,8 +1,0 @@
-# SPDX-FileCopyrightText: 2016-2023 Unisoc (Shanghai) Technologies Co., Ltd
-# SPDX-License-Identifier: LicenseRef-Unisoc-General-1.0
-
-# Recovery init bridge for Realme C53 (RMX3760) - Unisoc UMS9230 (hulk)
-# This file is loaded by recovery init as /init.recovery.${ro.hardware}.rc
-# (ro.hardware=ums9230_hulk). It imports the shared Unisoc recovery rc.
-
-import /init.recovery.common.rc

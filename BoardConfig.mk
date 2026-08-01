@@ -29,6 +29,26 @@ TARGET_IS_64_BIT := true
 TARGET_USES_64_BIT_BINDER := true
 TARGET_SUPPORTS_64_BIT_APPS := true
 
+# A/B Partisi
+AB_OTA_UPDATER := true
+
+AB_OTA_PARTITIONS += \
+    boot \
+    dtbo \
+    vendor_boot \
+    vbmeta \
+    vbmeta_system \
+    vbmeta_vendor \
+    vbmeta_product \
+    vbmeta_system_ext \
+    vbmeta_odm \
+    system \
+    system_ext \
+    vendor \
+    product \
+    odm \
+    vendor_dlkm
+
 # Bootloader & Platform (Sesuai prop.default: ums9230_hulk)
 TARGET_BOOTLOADER_BOARD_NAME := ums9230_hulk
 TARGET_OTA_ASSERT_DEVICE := RMX3760
@@ -41,6 +61,8 @@ TARGET_BOARD_PLATFORM := ums9230
 TARGET_NO_KERNEL := true
 BOARD_RAMDISK_USE_LZ4 := true
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
+BOARD_KERNEL_SEPARATED_DTBO := true
+BOARD_PREBUILT_DTBOIMAGE := $(DEVICE_PATH)/prebuilt/dtbo.img
 BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8 bootconfig bootconfig
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_PAGE_SIZE := 4096

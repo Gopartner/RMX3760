@@ -119,6 +119,7 @@ PRODUCT_COPY_FILES += \
 # which keeps the runtime self-consistent and provides __libcpp_verbose_abort
 # (the symbol that the earlier AOSP libc++ did not export, which crashed
 # android.hardware.boot@1.1.so during dynamic linking).
+
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/lib64/libc++.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libc++.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/libc.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libc.so \
@@ -137,3 +138,16 @@ PRODUCT_COPY_FILES += \
 # matching @1.1.so) produced the mixed runtime that crashed in
 # __libcpp_verbose_abort on android.hardware.boot@1.1.so; the build closure
 # supplies a self-consistent @1.0/@1.1/@1.2 set instead.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot-V1-ndk.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot-V1-ndk.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot@1.0.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot@1.0.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot@1.1.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot@1.1.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot@1.2.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot@1.2.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/libboot_control_client.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libboot_control_client.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/libbootloader_message.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libbootloader_message.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/libboot_control_client_unisoc.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libboot_control_client_unisoc.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/libproduction_client_unisoc.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libproduction_client_unisoc.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.boot@1.2.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/vendor.sprd.hardware.boot@1.2.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so

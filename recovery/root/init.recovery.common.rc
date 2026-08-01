@@ -21,13 +21,19 @@ service vendor.mlogservice /vendor/bin/mlogservice
     user shell
     group system root
 
+service rmx3760_boot_logger /system/bin/sh /system/bin/rmx3760_boot_logger.sh
+    class core
+    user root
+    group root
+    oneshot
+    disabled
 
 on init
     # Apply strict SELinux checking of PROT_EXEC on mmap/mprotect calls.
     write /sys/fs/selinux/checkreqprot 0
     start healthd
     start create_splloader_dual_slot_byname_path
-
+    start rmx3760_boot_logger
     export PATH /sbin:/system/bin:/vendor/bin
     export SECONDARY_STORAGE /storage/sdcard0
 
@@ -216,3 +222,18 @@ on property:ro.product.model=*
     setprop ro.product.vendor.model ${ro.product.model}
 on property:ro.product.name=*
     setprop ro.product.vendor.name ${ro.product.name}
+
+on property:sys.powerctl=*
+    exec -- /system/bin/sh -c '
+mkdir -p /data/media/0/TWRP-BOOTLOG
+{
+echo
+echo "==============================="
+echo "$(date)"
+echo "sys.powerctl=${sys.powerctl}"
+getprop ro.bootmode
+getprop ro.boot.mode
+getprop ro.boot.slot_suffix
+getprop ro.boot.verifiedbootstate
+getprop sys.boot_completed
+} >> /data/media/0/TWRP-BOOTLOG/reboot.log'

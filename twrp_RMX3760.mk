@@ -35,9 +35,10 @@ PRODUCT_GMS_CLIENTID_BASE := android-oppo
 
 # Build Properties & Fingerprint (Sesuai rish Shizuku RE58C2 & Android 15 Stock)
 PRODUCT_BUILD_PROP_OVERRIDES += \
-    PRIVATE_BUILD_DESC="ussi_arm64_full-user 15 AP3A.240905.015.A2 40 release-keys" \
+    PRIVATE_BUILD_DESC="ums9230_hulk_Natv-user 15 AP3A.240905.015.A2 40 release-keys" \
     TARGET_DEVICE="RMX3760" \
     PRODUCT_NAME="RMX3760" \
-    PRODUCT_MODEL="RMX3760"
+    PRODUCT_MODEL="RMX3760" \
+    PRODUCT_DEVICE="RE58C2"
 
 BUILD_FINGERPRINT := realme/RMX3760/RE58C2:15/AP3A.240905.015.A2/T.R4T2.1777915050:user/release-keys
