@@ -2,10 +2,14 @@ name: Build OrangeFox Recovery Android 15
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-22.04
+
     permissions:
       contents: write
 
@@ -20,16 +24,41 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 lib32ncurses6 libncurses6 libncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python3 binutils file rsync cpio
+          sudo apt install -y \
+            git-core \
+            gnupg \
+            flex \
+            bison \
+            build-essential \
+            zip \
+            curl \
+            zlib1g-dev \
+            libc6-dev-i386 \
+            lib32ncurses6 \
+            libncurses6 \
+            libncurses5-dev \
+            x11proto-core-dev \
+            libx11-dev \
+            lib32z1-dev \
+            libgl1-mesa-dev \
+            libxml2-utils \
+            xsltproc \
+            unzip \
+            fontconfig \
+            python3 \
+            binutils \
+            file \
+            rsync \
+            cpio
 
       - name: Install Repo Tool
         run: |
+          sudo apt update
+          sudo apt install -y repo
+
           mkdir -p ~/bin
-          # Menggunakan paket repo bawaan resmi dari repositori Ubuntu
-          sudo apt-get update && sudo apt-get install -y repo
-          # Buat symlink agar folder workspace bisa memanggilnya secara global
           ln -sf /usr/bin/repo ~/bin/repo
-          echo "$HOME/bin" >> $GITHUB_PATH
+          echo "$HOME/bin" >> "$GITHUB_PATH"
 
       - name: Initialize Repo & Sync
         run: |
@@ -39,16 +68,20 @@ jobs:
           git config --global user.name "arriRgb31"
           git config --global user.email "febyyusuf12345@gmail.com"
 
-         repo init --depth=1 \
-         -u https://gitlab.com/OrangeFox/Manifest.git \
-         -b fox_14.1
+          repo init --depth=1 \
+            -u https://gitlab.com/OrangeFox/Manifest.git \
+            -b fox_14.1
 
-          repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc --all)
+          repo sync \
+            -c \
+            --force-sync \
+            --no-clone-bundle \
+            --no-tags \
+            -j$(nproc --all)
 
       - name: Checkout Device Tree
         uses: actions/checkout@v4
         with:
-          # Memasukkan Device Tree hasil perbaikan lokal langsung ke jalur kompilasi
           path: workspace/device/realme/RMX3760
 
       - name: Set Python Default
@@ -58,26 +91,32 @@ jobs:
       - name: Build OrangeFox Recovery Image
         run: |
           cd workspace
+
           export ALLOW_MISSING_DEPENDENCIES=true
-          export FOX_BUILD_TYPE="Unofficial"
-          export LC_ALL="C"
-          
-          # Inisialisasi environment kompilasi TWRP/OrangeFox
+          export FOX_BUILD_TYPE=Unofficial
+          export LC_ALL=C
+
           source build/envsetup.sh
+
           lunch twrp_RMX3760-eng
-          
-          # Kompilasi ke target vendor_bootimage sesuai arsitektur Android 15 Realme C53
-          mka vendor_bootimage -j$(nproc)
+
+          mka vendorbootimage -j$(nproc)
 
       - name: Collect Target Artifacts
         run: |
           mkdir -p workspace/output
-          cp workspace/out/target/product/RMX3760/vendor_boot.img workspace/output/OrangeFox_vendor_boot_RMX3760.img || true
-          cp workspace/out/target/product/RMX3760/OrangeFox*.zip workspace/output/ || true
+
+          cp workspace/out/target/product/RMX3760/vendor_boot.img \
+            workspace/output/OrangeFox_vendor_boot_RMX3760.img || true
+
+          cp workspace/out/target/product/RMX3760/recovery.img \
+            workspace/output/ || true
+
+          cp workspace/out/target/product/RMX3760/OrangeFox*.zip \
+            workspace/output/ || true
 
       - name: Upload Recovery Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: OrangeFox_RMX3760_Android15
           path: workspace/output/*
-
