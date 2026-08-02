@@ -25,9 +25,10 @@ jobs:
       - name: Install Repo Tool
         run: |
           mkdir -p ~/bin
-          # Mengunduh script binary repo resmi dari mirror source CodeReview Google
-          curl -sL https://githubusercontent.com > ~/bin/repo
-          chmod +x ~/bin/repo
+          # Menggunakan paket repo bawaan resmi dari repositori Ubuntu
+          sudo apt-get update && sudo apt-get install -y repo
+          # Buat symlink agar folder workspace bisa memanggilnya secara global
+          ln -sf /usr/bin/repo ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
       - name: Initialize Repo & Sync
