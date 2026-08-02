@@ -1,15 +1,11 @@
-name: Build OrangeFox Recovery
+name: Build OrangeFox Recovery Android 15
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   build:
     runs-on: ubuntu-22.04
-
     permissions:
       contents: write
 
@@ -19,43 +15,17 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-          sudo rm -rf /usr/share/swift
           df -h
 
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y \
-            git-core \
-            gnupg \
-            flex \
-            bison \
-            build-essential \
-            zip \
-            curl \
-            zlib1g-dev \
-            libc6-dev-i386 \
-            lib32ncurses6 \
-            libncurses6 \
-            libncurses5-dev \
-            x11proto-core-dev \
-            libx11-dev \
-            lib32z1-dev \
-            libgl1-mesa-dev \
-            libxml2-utils \
-            xsltproc \
-            unzip \
-            fontconfig \
-            python3 \
-            binutils \
-            file \
-            rsync
+          sudo apt install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 lib32ncurses6 libncurses6 libncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python3 binutils file rsync cpio
 
       - name: Install Repo Tool
         run: |
           mkdir -p ~/bin
-          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+          curl https://googleapis.com > ~/bin/repo
           chmod +x ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
@@ -65,13 +35,43 @@ jobs:
           cd workspace
           git config --global user.name "arriRgb31"
           git config --global user.email "febyyusuf12345@gmail.com"
-          repo init --depth=1 -u https://gitlab.com/OrangeFox/Manifest.git -b fox_12.1
+          repo init --depth=1 -u https://gitlab.com -b fox_14.1
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
-      - name: Checkout Device Tree
+      - name: Checkout Raw Files (Vendor & Init Boot)
         uses: actions/checkout@v4
         with:
-          path: workspace/device/realme/RMX3760
+          path: raw_files
+
+      - name: Install and Run twrpdtgen
+        run: |
+          pip3 install twrpdtgen
+          # Langkah 1: Generate Device Tree dasar dari vendor_boot
+          python3 -m twrpdtgen raw_files/vendor_boot_b.img
+          
+          # Buat struktur direktori di workspace OrangeFox
+          mkdir -p workspace/device/realme
+          mv output/realme/RMX3760 workspace/device/realme/RMX3760
+
+      - name: Extract Kernel from init_boot
+        run: |
+          # Langkah 2: Ambil Kernel bawaan Android 15 untuk melengkapi device tree
+          cd raw_files
+          chmod +x magiskboot || true
+          
+          # Jika magiskboot lokal tidak kompatibel dengan arsitektur runner, gunakan prebuilt x86_64
+          wget https://github.com
+          unzip Magisk-v27.0.apk lib/x86_64/libmagiskboot.so
+          mv lib/x86_64/libmagiskboot.so ./magiskboot
+          chmod +x magiskboot
+          
+          # Ekstrak kernel dari init_boot
+          ./magiskboot unpack init_boot_b.img
+          
+          # Pindahkan file kernel hasil ekstraksi ke folder device tree
+          if [ -f kernel ]; then
+            cp kernel ../workspace/device/realme/RMX3760/prebuilt/kernel
+          fi
 
       - name: Set Python Default
         run: |
@@ -83,15 +83,19 @@ jobs:
           export ALLOW_MISSING_DEPENDENCIES=true
           export FOX_BUILD_TYPE="Unofficial"
           export LC_ALL="C"
-          rm -rf out
+          
+          # Tambahkan patch ramdisk Android 15 ke BoardConfig agar tidak gagal compile
+          echo "BOARD_USES_RECOVERY_AS_BOOT := false" >> device/realme/RMX3760/BoardConfig.mk
+          echo "BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true" >> device/realme/RMX3760/BoardConfig.mk
+          
           source build/envsetup.sh
           lunch twrp_RMX3760-eng
-          mka recoveryimage -j$(nproc)
+          mka vendor_bootimage -j$(nproc)
 
       - name: Collect Target Artifacts
         run: |
           mkdir -p workspace/output
-          cp workspace/out/target/product/RMX3760/recovery.img workspace/output/init_boot_recovery.img || true
+          cp workspace/out/target/product/RMX3760/vendor_boot.img workspace/output/OrangeFox_vendor_boot_RMX3760.img || true
           cp workspace/out/target/product/RMX3760/OrangeFox*.zip workspace/output/ || true
 
       - name: Upload Recovery Artifacts
@@ -99,3 +103,4 @@ jobs:
         with:
           name: OrangeFox_RMX3760_Android15
           path: workspace/output/*
+
