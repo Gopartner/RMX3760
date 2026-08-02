@@ -14,14 +14,14 @@ jobs:
       contents: write
 
     steps:
-      - name: Free Disk Space
-        uses: easimon/maximize-build-space@master
-        with:
-          root-reserve-mb: 12288
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
+      - name: Clean and Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/share/swift
+          df -h
 
       - name: Install Dependencies
         run: |
@@ -65,10 +65,10 @@ jobs:
           cd workspace
           git config --global user.name "arriRgb31"
           git config --global user.email "febyyusuf12345@gmail.com"
-
+          
           # Clone OrangeFox Theme Vendor
           git clone https://gitlab.com/OrangeFox/misc/theme.git vendor/recovery/orangefox
-
+          
           # Init & Sync Manifest OrangeFox 12.1
           repo init --depth=1 -u https://wiki.orangefox.tech/setup/android-12.1
           repo sync -c --force-sync --no-clone-bundle --no-tags --prune -j$(nproc)
@@ -96,7 +96,6 @@ jobs:
       - name: Collect Target Artifacts
         run: |
           mkdir -p workspace/output
-          # Menyalin output recovery.img (untuk target partisi init_boot) dan installer zip OrangeFox
           cp workspace/out/target/product/RMX3760/recovery.img workspace/output/init_boot_recovery.img || true
           cp workspace/out/target/product/RMX3760/OrangeFox*.zip workspace/output/ || true
 
