@@ -59,16 +59,14 @@ jobs:
           chmod +x ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Initialize OrangeFox Source Manifest
+      - name: Initialize Repo & Sync
         run: |
-          mkdir workspace
+          mkdir -p workspace
           cd workspace
           git config --global user.name "arriRgb31"
           git config --global user.email "febyyusuf12345@gmail.com"
-          
-          # Init & Sync Manifest OrangeFox 12.1 Resmi dari GitLab
-          repo init --depth=1 -u https://gitlab.com/OrangeFox/manifest.git -b fox_12.1
-          repo sync -c --force-sync --no-clone-bundle --no-tags --prune -j$(nproc)
+          repo init --depth=1 -u https://gitlab.com/OrangeFox/Manifest.git -b fox_12.1
+          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
       - name: Checkout Device Tree
         uses: actions/checkout@v4
