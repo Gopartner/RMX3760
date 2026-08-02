@@ -1,40 +1,28 @@
-# TWRP Flags - RMX3760 Android 15 (TWRP 12.1)
+# Flags File for Realme C53 (RMX3760 - UMS9230)
+# Synchronized with Android 15 Virtual A/B Target: init_boot
 
-/system_image      emmc   /dev/block/mapper/system        flags=display="System Image";backup=1;flashimg=1;slotselect
-/system            ext4   /dev/block/mapper/system        flags=display="System";logical;slotselect
+# External Storage & USB-OTG
+/external_sd       vfat      /dev/block/mmcblk1p1    /dev/block/mmcblk1    flags=display="MicroSD";storage;wipeingui;removable;fsflags="utf8"
+/usb-otg           vfat      /dev/block/sda1         /dev/block/sda        flags=display="USB-OTG";storage;wipeingui;removable;fsflags="utf8"
 
-/vendor_image      emmc   /dev/block/mapper/vendor        flags=display="Vendor Image";backup=1;flashimg=1;slotselect
-/vendor            ext4   /dev/block/mapper/vendor        flags=display="Vendor";logical;slotselect
+# Boot & Kernel Partitions
+/boot              emmc      /dev/block/by-name/boot                       flags=display="Boot Kernel";backup=1;flashimg=1;slotselect
+/init_boot         emmc      /dev/block/by-name/init_boot                  flags=display="Init Boot (Recovery)";backup=1;flashimg=1;slotselect
+/vendor_boot       emmc      /dev/block/by-name/vendor_boot                flags=display="Vendor Boot";backup=1;flashimg=1;slotselect
+/dtbo              emmc      /dev/block/by-name/dtbo                       flags=display="DTBO";backup=1;flashimg=1;slotselect
 
-/product_image     emmc   /dev/block/mapper/product       flags=display="Product Image";backup=1;flashimg=1;slotselect
-/product           ext4   /dev/block/mapper/product       flags=display="Product";logical;slotselect
+# Dynamic Super Image Partition
+/super             emmc      /dev/block/by-name/super        flags=display="Super Image";backup=1;flashimg=1
 
-/system_ext_image  emmc   /dev/block/mapper/system_ext    flags=display="System Ext Image";backup=1;flashimg=1;slotselect
-/system_ext        ext4   /dev/block/mapper/system_ext    flags=display="System Ext";logical;slotselect
+# AVB VBMeta Partitions
+/vbmeta            emmc      /dev/block/by-name/vbmeta                     flags=display="VBMeta";backup=1;flashimg=1;slotselect
+/vbmeta_system     emmc      /dev/block/by-name/vbmeta_system              flags=display="VBMeta System";backup=1;flashimg=1;slotselect
+/vbmeta_vendor     emmc      /dev/block/by-name/vbmeta_vendor              flags=display="VBMeta Vendor";backup=1;flashimg=1;slotselect
+/vbmeta_product    emmc      /dev/block/by-name/vbmeta_product             flags=display="VBMeta Product";backup=1;flashimg=1;slotselect
+/vbmeta_system_ext emmc      /dev/block/by-name/vbmeta_system_ext          flags=display="VBMeta System Ext";backup=1;flashimg=1;slotselect
 
-/odm_image         emmc   /dev/block/mapper/odm           flags=display="ODM Image";backup=1;flashimg=1;slotselect
-/odm               ext4   /dev/block/mapper/odm           flags=display="ODM";logical;slotselect
+# Persistent & Device Specific Data
+/metadata          ext4      /dev/block/by-name/metadata                   flags=display="Metadata";backup=1
+/persist           ext4      /dev/block/by-name/persist                    flags=display="Persist";backup=1
+/prodnv            ext4      /dev/block/by-name/prodnv                     flags=display="ProdNV (NVRAM)";backup=1
 
-/vendor_dlkm_image emmc   /dev/block/mapper/vendor_dlkm   flags=display="Vendor DLKM";backup=1;flashimg=1;slotselect
-/vendor_dlkm       ext4   /dev/block/mapper/vendor_dlkm   flags=display="Vendor DLKM";logical;slotselect
-
-/system_dlkm_image emmc   /dev/block/mapper/system_dlkm   flags=display="System DLKM";backup=1;flashimg=1;slotselect
-/system_dlkm       ext4   /dev/block/mapper/system_dlkm   flags=display="System DLKM";logical;slotselect
-
-/super             emmc   /dev/block/by-name/super        flags=display="Super";flashimg=1
-
-/boot              emmc   /dev/block/by-name/boot         flags=display="Boot";backup=1;flashimg=1;slotselect
-/vendor_boot       emmc   /dev/block/by-name/vendor_boot  flags=display="Vendor Boot";backup=1;flashimg=1;slotselect
-/dtbo              emmc   /dev/block/by-name/dtbo         flags=display="DTBO";backup=1;flashimg=1;slotselect
-
-/vbmeta            emmc   /dev/block/by-name/vbmeta               flags=display="vbmeta";backup=1;flashimg=1;slotselect
-/vbmeta_system     emmc   /dev/block/by-name/vbmeta_system        flags=display="vbmeta_system";backup=1;slotselect
-/vbmeta_vendor     emmc   /dev/block/by-name/vbmeta_vendor        flags=display="vbmeta_vendor";backup=1;slotselect
-/vbmeta_product    emmc   /dev/block/by-name/vbmeta_product       flags=display="vbmeta_product";backup=1;slotselect
-/vbmeta_system_ext emmc   /dev/block/by-name/vbmeta_system_ext    flags=display="vbmeta_system_ext";backup=1;slotselect
-
-/metadata          ext4   /dev/block/by-name/metadata     flags=display="Metadata";backup=1
-/persist           ext4   /dev/block/by-name/persist      flags=display="Persist";backup=1
-
-/external_sd       vfat   /dev/block/mmcblk1p1  /dev/block/mmcblk1  flags=display="MicroSD";storage;wipeingui;removable;fsflags="utf8"
-/usb-otg           vfat   /dev/block/sda1      /dev/block/sda       flags=display="USB-OTG";storage;wipeingui;removable;fsflags="utf8"

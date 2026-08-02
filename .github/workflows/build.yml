@@ -1,4 +1,4 @@
-name: Build TWRP Recovery
+name: Build OrangeFox Recovery
 
 on:
   workflow_dispatch:
@@ -8,22 +8,20 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     permissions:
       contents: write
 
     steps:
       - name: Free Disk Space
-        uses: jlumbroso/free-disk-space@main
+        uses: easimon/maximize-build-space@master
         with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
+          root-reserve-mb: 12288
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
 
       - name: Install Dependencies
         run: |
@@ -38,10 +36,12 @@ jobs:
             curl \
             zlib1g-dev \
             libc6-dev-i386 \
-            libncurses5-dev \
+            lib32ncurses5-dev \
+            libncurses5 \
             libncurses6 \
             x11proto-core-dev \
             libx11-dev \
+            lib32z1-dev \
             libgl1-mesa-dev \
             libxml2-utils \
             xsltproc \
@@ -52,29 +52,26 @@ jobs:
             file \
             rsync
 
-      - name: Install Repo
+      - name: Install Repo Tool
         run: |
           mkdir -p ~/bin
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
           chmod +x ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Init Repo
+      - name: Initialize OrangeFox Source Manifest
         run: |
           mkdir workspace
           cd workspace
           git config --global user.name "arriRgb31"
-          git config --global user.email "febyyusuf12345@gmail.com"
-          repo init \
-            --depth=1 \
-            -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
-            -b twrp-12.1
-          repo sync \
-            -c \
-            --force-sync \
-            --no-clone-bundle \
-            --no-tags \
-            -j$(nproc)
+          git config --global user.email "240433352+arriRgb31@users.noreply.github.com"
+
+          # Clone OrangeFox Theme Vendor
+          git clone https://gitlab.com/OrangeFox/misc/theme.git vendor/recovery/orangefox
+
+          # Init & Sync Manifest OrangeFox 12.1
+          repo init --depth=1 -u https://wiki.orangefox.tech/setup/android-12.1
+          repo sync -c --force-sync --no-clone-bundle --no-tags --prune -j$(nproc)
 
       - name: Checkout Device Tree
         uses: actions/checkout@v4
@@ -85,23 +82,26 @@ jobs:
         run: |
           sudo ln -sf /usr/bin/python3 /usr/bin/python
 
-      - name: Build Recovery
+      - name: Build OrangeFox Recovery Image
         run: |
           cd workspace
           export ALLOW_MISSING_DEPENDENCIES=true
+          export FOX_BUILD_TYPE="Unofficial"
+          export LC_ALL="C"
           rm -rf out
           source build/envsetup.sh
           lunch twrp_RMX3760-eng
-          mka vendorbootimage -j$(nproc)
+          mka recoveryimage -j$(nproc)
 
-      - name: Collect Images
+      - name: Collect Target Artifacts
         run: |
           mkdir -p workspace/output
-          cp workspace/out/target/product/RMX3760/vendor_boot.img workspace/output/ || true
-          cp workspace/out/target/product/RMX3760/recovery.img workspace/output/ || true
+          # Menyalin output recovery.img (untuk target partisi init_boot) dan installer zip OrangeFox
+          cp workspace/out/target/product/RMX3760/recovery.img workspace/output/init_boot_recovery.img || true
+          cp workspace/out/target/product/RMX3760/OrangeFox*.zip workspace/output/ || true
 
-      - name: Upload Images
+      - name: Upload Recovery Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: TWRP_RMX3760
-          path: workspace/output/*.img
+          name: OrangeFox_RMX3760_Android15
+          path: workspace/output/*

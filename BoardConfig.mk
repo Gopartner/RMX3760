@@ -1,13 +1,11 @@
 #
 # Copyright (C) 2026 The Android Open Source Project
-# Copyright (C) 2026 SebaUbuntu's TWRP device tree generator
-#
-# SPDX-License-Identifier: Apache-2.0
+# Copyright (C) 2026 OrangeFox Recovery Project
 #
 
 DEVICE_PATH := device/realme/RMX3760
 
-# For building with minimal manifest
+# Allow Building with Minimal Manifest (Bypass Soong / VTS Errors)
 ALLOW_MISSING_DEPENDENCIES := true
 
 # Architecture Setup
@@ -29,7 +27,7 @@ TARGET_IS_64_BIT := true
 TARGET_USES_64_BIT_BINDER := true
 TARGET_SUPPORTS_64_BIT_APPS := true
 
-# A/B Partisi
+# A/B Partitions
 AB_OTA_UPDATER := true
 
 AB_OTA_PARTITIONS += \
@@ -49,7 +47,7 @@ AB_OTA_PARTITIONS += \
     odm \
     vendor_dlkm
 
-# Bootloader & Platform (Sesuai prop.default: ums9230_hulk)
+# Bootloader & Platform (ums9230_hulk)
 TARGET_BOOTLOADER_BOARD_NAME := ums9230_hulk
 TARGET_OTA_ASSERT_DEVICE := RMX3760
 TARGET_NO_BOOTLOADER := true
@@ -57,12 +55,11 @@ ENABLE_CPUSETS := true
 ENABLE_SCHEDBOOST := true
 TARGET_BOARD_PLATFORM := ums9230
 
-# Kernel & Header v4 Setup
+# Kernel & Header v4 Setup (Sinkron dengan unpack vendor_boot_b.img)
 TARGET_NO_KERNEL := true
 BOARD_RAMDISK_USE_LZ4 := true
-TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
+TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb
 BOARD_KERNEL_SEPARATED_DTBO := true
-BOARD_PREBUILT_DTBOIMAGE := $(DEVICE_PATH)/prebuilt/dtbo.img
 BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8 bootconfig bootconfig
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_PAGE_SIZE := 4096
@@ -93,7 +90,7 @@ BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 BOARD_SUPPRESS_SECURE_ERASE := true
 BOARD_BUILD_SYSTEM_ROOT_IMAGE := false
 
-# Recovery Configuration
+# Recovery Configuration (Rujukan fstab asli)
 TARGET_NO_RECOVERY := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
@@ -105,9 +102,10 @@ VENDOR_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
 PLATFORM_VERSION := 15
 PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
 
-# Bypass ELF check for PRODUCT_COPY_FILES (Kernel Modules .ko & Prebuilts)
+# Bypass ELF Check
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 BUILD_BROKEN_PREBUILT_ELF_FILES := true
+BUILD_BROKEN_DUP_RULES := true
 
 # Partitions Size & Filesystems (Realme C53 Firmware)
 BOARD_FLASH_BLOCK_SIZE := 262144
@@ -146,69 +144,27 @@ TARGET_SCREEN_DENSITY := 320
 # Vendor_boot Recovery Ramdisk Configuration
 BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
 BOARD_USES_GENERIC_KERNEL_IMAGE := true
-BOARD_PREBUILT_BOOTIMAGE := $(DEVICE_PATH)/prebuilt/boot.img
 BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
 BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE := true
 
-# TWRP Main Configuration
-TW_THEME := portrait_hdpi
-TW_EXTRA_LANGUAGES := true
-TW_INPUT_BLACKLIST := "hbtp_vm"
-TW_USE_TOOLBOX := true
-TW_INCLUDE_FUSE_NTFS := true
-TW_INCLUDE_FUSE_EXFAT := true
-RECOVERY_SDCARD_ON_DATA := true
-TW_BRIGHTNESS_PATH := "/sys/class/backlight/sprd_backlight/brightness"
-TW_MAX_BRIGHTNESS := 255
-TW_DEFAULT_BRIGHTNESS := 150
-TW_MTP_DEVICE := "/dev/mtp_usb"
-TW_EXCLUDE_TWRPAPP := true
-TW_EXCLUDE_APEX := true
-TW_EXCLUDE_DEFAULT_USB_INIT := true
-TW_NO_SCREEN_BLANK := true
-TW_NO_USB_STORAGE := true
-TW_USE_MODEL_HARDWARE_ID_FOR_DEVICE_ID := true
-TW_DEVICE_VERSION := RMX3760_Nino
+# OrangeFox Configuration
+FOX_RECOVERY_INSTALL_PARTITION := /dev/block/by-name/init_boot
+FOX_REPLACE_BUSYBOX_PS := 1
+FOX_USE_BASH_SHELL := true
+FOX_ASH_IS_POSH := 1
+FOX_USE_NANO_EDITOR := true
+OF_QUICK_BACKUP_LIST := "/data;/boot;"
+OF_SCREEN_H := 2400
+OF_STATUS_H := 80
+OF_STATUS_INDENT_LEFT := 48
+OF_STATUS_INDENT_RIGHT := 48
+OF_USE_GREEN_LED := 0
+OF_ALLOW_DISABLE_NAVBAR := 0
+TW_DEVICE_VERSION := RMX3760_OrangeFox
 
-# Memerintahkan TWRP untuk memuat modul dari vendor_boot
-TW_LOAD_VENDOR_BOOT_MODULES := true
-
-# Memaksa compiler mengikuti urutan asli yang valid dari file teks
-BOARD_RECOVERY_KERNEL_MODULES_LOAD := $(shell cat $(DEVICE_PATH)/recovery/root/lib/modules/modules.load.recovery)
-
-# Memasukkan semua file biner modul fisik ke dalam ramdisk recovery
-BOARD_RECOVERY_KERNEL_MODULES := $(wildcard $(DEVICE_PATH)/recovery/root/lib/modules/*.ko)
-
-# Fitur Tambahan
-TW_INCLUDE_FASTBOOTD := true
-TW_INCLUDE_RESETPROP := true
-TW_INCLUDE_REPACKTOOLS := true
-TW_INCLUDE_LIBRESETPROP := true
-TW_HAS_EDL_MODE := true
-
-# For Debugging
-TWRP_INCLUDE_LOGCAT := true
-TARGET_USES_LOGD := true
-
-# Decryption & FBE v2 Setup (Realme C53 Android 15 - Unisoc UMS9230)
+# FBE v2 Encryption Setup
 TW_INCLUDE_CRYPTO := true
 TW_INCLUDE_CRYPTO_FBE := true
 TW_USE_FSCRYPT_POLICY := 2
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
 TW_PREPARE_DATA_MEDIA_EARLY := true
-
-# Additional binaries & libraries needed for recovery (keymaster software backend)
-TARGET_RECOVERY_DEVICE_MODULES += \
-    libkeymaster4 \
-    libpuresoftkeymasterdevice
-
-TW_RECOVERY_ADDITIONAL_RELINK_LIBRARY_FILES += \
-    $(TARGET_OUT_SHARED_LIBRARIES)/libkeymaster4.so \
-    $(TARGET_OUT_SHARED_LIBRARIES)/libpuresoftkeymasterdevice.so
-
-# Perbaikan untuk Overriding Commands Target Fastbootd di GitHub Actions
-BUILD_BROKEN_DUP_RULES := true
-
-# Mencegah Linker AOSP Menuntut Simbol Enkripsi Eksternal yang Tidak Eksis
-BOARD_USES_RECOVERY_AS_BOOT := false
-

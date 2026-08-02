@@ -1,30 +1,22 @@
 #
 # Copyright (C) 2026 The Android Open Source Project
-# Copyright (C) 2026 SebaUbuntu's TWRP device tree generator
-#
-# SPDX-License-Identifier: Apache-2.0
+# Copyright (C) 2026 OrangeFox Recovery Project
 #
 
-# Inherit from those products. Most specific first.
+# Inherit from core products
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/base.mk)
-
-# Installs gsi keys into ramdisk, to boot a developer GSI with verified boot.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_keys.mk)
-
-# Configure emulated_storage.mk
 $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
-
-# Virtual A/B OTA Support
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 
-# Inherit from RMX3760 device (Gunakan huruf kecil sesuai folder utama)
+# Inherit device configuration
 $(call inherit-product, device/realme/RMX3760/device.mk)
 
-# Inherit some common TWRP stuff.
-$(call inherit-product, vendor/twrp/config/common.mk)
+# Inherit OrangeFox Vendor Config (Sinkron dengan OrangeFox Branch 12.1)
+$(call inherit-product, vendor/recovery/orangefox/vendor.mk)
 
-# Product Identifiers RMX3760 (Diselaraskan dengan bsp compiler AOSP)
+# Product Identifiers RMX3760
 PRODUCT_DEVICE := RMX3760
 PRODUCT_NAME := twrp_RMX3760
 PRODUCT_BRAND := realme
@@ -33,7 +25,6 @@ PRODUCT_MANUFACTURER := realme
 
 PRODUCT_GMS_CLIENTID_BASE := android-oppo
 
-# Build Properties & Fingerprint (Sesuai rish Shizuku RE58C2 & Android 15 Stock)
 PRODUCT_BUILD_PROP_OVERRIDES += \
     PRIVATE_BUILD_DESC="ums9230_hulk_Natv-user 15 AP3A.240905.015.A2 40 release-keys" \
     TARGET_DEVICE="RMX3760" \

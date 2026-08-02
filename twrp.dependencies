@@ -1,7 +1,1 @@
-[
-  {
-    "repository": "Minimal-Manifest-TWRP/android_bootable_recovery",
-    "target_path": "bootable/recovery",
-    "branch": "twrp-12.1"
-  }
-]
+[]
