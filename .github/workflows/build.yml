@@ -62,24 +62,27 @@ jobs:
 
       - name: Initialize OrangeFox Sources
         run: |
-          git clone --depth=1 https://gitlab.com/OrangeFox/sync.git ~/OrangeFox_sync
+  mkdir -p ~/OrangeFox_sync
+  cd ~/OrangeFox_sync
 
-          cd ~/OrangeFox_sync/sync
+  git clone --depth=1 https://gitlab.com/OrangeFox/sync.git
 
-          chmod +x orangefox_sync.sh
+  cd sync
 
-          ./orangefox_sync.sh \
-            --branch 14.1 \
-            --path "$GITHUB_WORKSPACE/workspace"
+  chmod +x orangefox_sync.sh
 
-          cd "$GITHUB_WORKSPACE/workspace"
+  ./orangefox_sync.sh \
+    --branch 14.1 \
+    --path "$GITHUB_WORKSPACE/workspace"
 
-          repo sync \
-            -c \
-            --force-sync \
-            --no-clone-bundle \
-            --no-tags \
-            -j$(nproc --all)
+  cd "$GITHUB_WORKSPACE/workspace"
+
+  repo sync \
+    -c \
+    --force-sync \
+    --no-clone-bundle \
+    --no-tags \
+    -j$(nproc --all)
 
       - name: Checkout Device Tree
         uses: actions/checkout@v4
