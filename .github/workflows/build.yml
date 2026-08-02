@@ -25,8 +25,8 @@ jobs:
       - name: Install Repo Tool
         run: |
           mkdir -p ~/bin
-          # Fetches the raw executable directly without any encoding or base64 requirements
-          curl -sL "https://googlesource.com" | base64 -d > ~/bin/repo || curl -sL https://googleapis.com > ~/bin/repo
+          # Mengunduh script binary repo resmi dari mirror source CodeReview Google
+          curl -sL https://githubusercontent.com > ~/bin/repo
           chmod +x ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
@@ -35,45 +35,16 @@ jobs:
           mkdir -p workspace
           cd workspace
           git config --global user.name "arriRgb31"
-          git config --global user.email "febyyusuf12345@gmail.com"
-          # URL Diperbaiki: Ditujukan langsung ke Manifest resmi OrangeFox GitLab
+          git config --global user.email "240433352+arriRgb31@users.noreply.github.com"
+          # Menggunakan Manifest OrangeFox terbaru berbasis Android 14/15 (fox_14.1)
           repo init --depth=1 -u https://gitlab.com -b fox_14.1
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
-      - name: Checkout Raw Files (Vendor & Init Boot)
+      - name: Checkout Device Tree
         uses: actions/checkout@v4
         with:
-          path: raw_files
-
-      - name: Install and Run twrpdtgen
-        run: |
-          pip3 install twrpdtgen
-          # Langkah 1: Generate Device Tree dasar dari vendor_boot
-          python3 -m twrpdtgen raw_files/vendor_boot_b.img
-
-          # Buat struktur direktori di workspace OrangeFox
-          mkdir -p workspace/device/realme
-          mv output/realme/RMX3760 workspace/device/realme/RMX3760
-
-      - name: Extract Kernel from init_boot
-        run: |
-          # Langkah 2: Ambil Kernel bawaan Android 15 untuk melengkapi device tree
-          cd raw_files
-          
-          # URL Diperbaiki: Download direct binary Magisk v27.0 asli untuk Linux x86_64
-          wget -q https://github.com
-          unzip -q Magisk-v27.0.apk lib/x86_64/libmagiskboot.so
-          mv lib/x86_64/libmagiskboot.so ./magiskboot
-          chmod +x magiskboot
-
-          # Ekstrak kernel dari init_boot_b.img
-          ./magiskboot unpack init_boot_b.img
-
-          # Pindahkan file kernel hasil ekstraksi ke folder device tree yang baru di-generate
-          if [ -f kernel ]; then
-            mkdir -p ../workspace/device/realme/RMX3760/prebuilt
-            cp kernel ../workspace/device/realme/RMX3760/prebuilt/kernel
-          fi
+          # Memasukkan Device Tree hasil perbaikan lokal langsung ke jalur kompilasi
+          path: workspace/device/realme/RMX3760
 
       - name: Set Python Default
         run: |
@@ -85,13 +56,12 @@ jobs:
           export ALLOW_MISSING_DEPENDENCIES=true
           export FOX_BUILD_TYPE="Unofficial"
           export LC_ALL="C"
-
-          # Tambahkan patch ramdisk Android 15 ke BoardConfig agar tidak gagal compile
-          echo "BOARD_USES_RECOVERY_AS_BOOT := false" >> device/realme/RMX3760/BoardConfig.mk
-          echo "BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true" >> device/realme/RMX3760/BoardConfig.mk
-
+          
+          # Inisialisasi environment kompilasi TWRP/OrangeFox
           source build/envsetup.sh
           lunch twrp_RMX3760-eng
+          
+          # Kompilasi ke target vendor_bootimage sesuai arsitektur Android 15 Realme C53
           mka vendor_bootimage -j$(nproc)
 
       - name: Collect Target Artifacts
@@ -105,3 +75,4 @@ jobs:
         with:
           name: OrangeFox_RMX3760_Android15
           path: workspace/output/*
+
