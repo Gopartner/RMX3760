@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     permissions:
       contents: write
@@ -36,9 +36,9 @@ jobs:
             curl \
             zlib1g-dev \
             libc6-dev-i386 \
-            lib32ncurses5-dev \
-            libncurses5 \
+            lib32ncurses6 \
             libncurses6 \
+            libncurses5-dev \
             x11proto-core-dev \
             libx11-dev \
             lib32z1-dev \
@@ -64,7 +64,7 @@ jobs:
           mkdir workspace
           cd workspace
           git config --global user.name "arriRgb31"
-          git config --global user.email "240433352+arriRgb31@users.noreply.github.com"
+          git config --global user.email "febyyusuf12345@gmail.com"
 
           # Clone OrangeFox Theme Vendor
           git clone https://gitlab.com/OrangeFox/misc/theme.git vendor/recovery/orangefox
