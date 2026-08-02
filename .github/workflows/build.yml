@@ -60,17 +60,19 @@ jobs:
           ln -sf /usr/bin/repo ~/bin/repo
           echo "$HOME/bin" >> "$GITHUB_PATH"
 
-      - name: Initialize Repo & Sync
+      - name: Initialize OrangeFox Sources
         run: |
-          mkdir -p workspace
-          cd workspace
+          git clone --depth=1 https://gitlab.com/OrangeFox/sync.git ~/OrangeFox_sync
 
-          git config --global user.name "arriRgb31"
-          git config --global user.email "febyyusuf12345@gmail.com"
+          cd ~/OrangeFox_sync/sync
 
-          repo init --depth=1 \
-            -u https://gitlab.com/OrangeFox/Manifest.git \
-            -b fox_14.1
+          chmod +x orangefox_sync.sh
+
+          ./orangefox_sync.sh \
+            --branch 14.1 \
+            --path "$GITHUB_WORKSPACE/workspace"
+
+          cd "$GITHUB_WORKSPACE/workspace"
 
           repo sync \
             -c \
