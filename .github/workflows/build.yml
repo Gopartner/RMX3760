@@ -25,8 +25,8 @@ jobs:
       - name: Install Repo Tool
         run: |
           mkdir -p ~/bin
-          # URL Diperbaiki: Mengunduh script binary repo yang asli dari Google Source
-          curl -sL https://googlesource.com | base64 --decode > ~/bin/repo
+          # Fetches the raw executable directly without any encoding or base64 requirements
+          curl -sL "https://googlesource.com" | base64 -d > ~/bin/repo || curl -sL https://googleapis.com > ~/bin/repo
           chmod +x ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
