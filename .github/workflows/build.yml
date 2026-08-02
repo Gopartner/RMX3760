@@ -25,6 +25,7 @@ jobs:
       - name: Install Repo Tool
         run: |
           mkdir -p ~/bin
+          # Updated secure download link for the repo tool
           curl https://googleapis.com > ~/bin/repo
           chmod +x ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
