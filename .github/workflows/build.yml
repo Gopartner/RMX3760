@@ -36,10 +36,17 @@ jobs:
           mkdir -p workspace
           cd workspace
           git config --global user.name "arriRgb31"
-          git config --global user.email "240433352+arriRgb31@users.noreply.github.com"
-          # Menggunakan Manifest OrangeFox terbaru berbasis Android 14/15 (fox_14.1)
-          repo init --depth=1 -u https://gitlab.com -b fox_14.1
-          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+          git config --global user.email "febyyusuf12345@gmail.com"
+
+          # Optimasi Git Buffer untuk mengantisipasi data berukuran besar
+          git config --global http.postBuffer 524288000
+          git config --global http.maxRequestSize 100M
+
+          # SOLUSI UTAMA: Mengalihkan dari GitLab ke Mirror Resmi di GitHub guna menghindari Error 403
+          repo init --depth=1 -u https://github.com -b fox_14.1
+
+          # Proses sinkronisasi dengan parameter aman agar tidak terputus di tengah jalan
+          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags --optimized-fetch || repo sync -c -j1 --force-sync
 
       - name: Checkout Device Tree
         uses: actions/checkout@v4
