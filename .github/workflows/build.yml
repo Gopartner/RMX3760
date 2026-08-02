@@ -1,4 +1,4 @@
-name: Build OrangeFox Recovery Android 15
+name: Build TWRP RMX3760 Android 15
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ jobs:
       contents: write
 
     steps:
-      - name: Clean and Free Disk Space
+      - name: Free Disk Space
         run: |
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
@@ -26,6 +26,7 @@ jobs:
           sudo apt update
           sudo apt install -y \
             git-core \
+            repo \
             gnupg \
             flex \
             bison \
@@ -34,71 +35,58 @@ jobs:
             curl \
             zlib1g-dev \
             libc6-dev-i386 \
-            lib32ncurses6 \
-            libncurses6 \
-            libncurses5-dev \
-            x11proto-core-dev \
-            libx11-dev \
             lib32z1-dev \
-            libgl1-mesa-dev \
+            lib32ncurses6 \
+            libncurses5-dev \
             libxml2-utils \
             xsltproc \
             unzip \
-            fontconfig \
             python3 \
-            binutils \
-            file \
             rsync \
-            cpio
+            cpio \
+            lz4 \
+            bc
 
-      - name: Install Repo Tool
+      - name: Prepare repo
         run: |
-          sudo apt update
-          sudo apt install -y repo
-
           mkdir -p ~/bin
           ln -sf /usr/bin/repo ~/bin/repo
-          echo "$HOME/bin" >> "$GITHUB_PATH"
+          echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Initialize OrangeFox Sources
+      - name: Init TWRP Source
         run: |
-  mkdir -p ~/OrangeFox_sync
-  cd ~/OrangeFox_sync
+          mkdir workspace
+          cd workspace
 
-  git clone --depth=1 https://gitlab.com/OrangeFox/sync.git
+          git config --global user.name "arriRgb31"
+          git config --global user.email "febyyusuf12345@gmail.com"
 
-  cd sync
+          repo init \
+            --depth=1 \
+            -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
+            -b twrp-12.1
 
-  chmod +x orangefox_sync.sh
-
-  ./orangefox_sync.sh \
-    --branch 14.1 \
-    --path "$GITHUB_WORKSPACE/workspace"
-
-  cd "$GITHUB_WORKSPACE/workspace"
-
-  repo sync \
-    -c \
-    --force-sync \
-    --no-clone-bundle \
-    --no-tags \
-    -j$(nproc --all)
+          repo sync \
+            -c \
+            --force-sync \
+            --no-clone-bundle \
+            --no-tags \
+            -j$(nproc)
 
       - name: Checkout Device Tree
         uses: actions/checkout@v4
         with:
           path: workspace/device/realme/RMX3760
 
-      - name: Set Python Default
+      - name: Python
         run: |
           sudo ln -sf /usr/bin/python3 /usr/bin/python
 
-      - name: Build OrangeFox Recovery Image
+      - name: Build
         run: |
           cd workspace
 
           export ALLOW_MISSING_DEPENDENCIES=true
-          export FOX_BUILD_TYPE=Unofficial
           export LC_ALL=C
 
           source build/envsetup.sh
@@ -107,21 +95,15 @@ jobs:
 
           mka vendorbootimage -j$(nproc)
 
-      - name: Collect Target Artifacts
+      - name: Collect
         run: |
           mkdir -p workspace/output
 
-          cp workspace/out/target/product/RMX3760/vendor_boot.img \
-            workspace/output/OrangeFox_vendor_boot_RMX3760.img || true
+          cp workspace/out/target/product/RMX3760/vendor_boot.img workspace/output/ || true
+          cp workspace/out/target/product/RMX3760/recovery.img workspace/output/ || true
 
-          cp workspace/out/target/product/RMX3760/recovery.img \
-            workspace/output/ || true
-
-          cp workspace/out/target/product/RMX3760/OrangeFox*.zip \
-            workspace/output/ || true
-
-      - name: Upload Recovery Artifacts
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: OrangeFox_RMX3760_Android15
+          name: TWRP_RMX3760
           path: workspace/output/*
