@@ -25,28 +25,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
-            git-core \
-            repo \
-            gnupg \
-            flex \
-            bison \
-            build-essential \
-            zip \
-            curl \
-            zlib1g-dev \
-            libc6-dev-i386 \
-            lib32z1-dev \
-            lib32ncurses6 \
-            libncurses5-dev \
-            libxml2-utils \
-            xsltproc \
-            unzip \
-            python3 \
-            python-is-python3 \
-            rsync \
-            cpio \
-            lz4 \
-            bc
+            git-core repo gnupg flex bison build-essential zip curl \
+            zlib1g-dev libc6-dev-i386 lib32z1-dev lib32ncurses6 libncurses5-dev \
+            libxml2-utils xsltproc unzip python3 python-is-python3 rsync cpio lz4 bc
 
       - name: Prepare repo
         run: |
@@ -54,54 +35,49 @@ jobs:
           ln -sf /usr/bin/repo ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Init TWRP Source
+      - name: Repo init & Repo Sync
         run: |
-          mkdir workspace
+          mkdir -p workspace
           cd workspace
-
           git config --global user.name "arriRgb31"
           git config --global user.email "febyyusuf12345@gmail.com"
-
-          repo init \
-            --depth=1 \
-            -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
-            -b twrp-12.1
-
-          repo sync \
-            -c \
-            --force-sync \
-            --no-clone-bundle \
-            --no-tags \
-            -j$(nproc)
+          repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
+          repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc)
 
       - name: Checkout Device Tree
         uses: actions/checkout@v4
         with:
           path: workspace/device/realme/RMX3760
 
-      - name: Build
+      - name: Clean & Build
         run: |
           cd workspace
-
           export ALLOW_MISSING_DEPENDENCIES=true
           export LC_ALL=C
-
           source build/envsetup.sh
-
           lunch twrp_RMX3760-eng
 
-          mka init_bootimage -j$(nproc) || mka recoveryimage -j$(nproc)
+          # Hapus sisa-sisa cache build sebelumnya biar Ninja BENAR-BENAR mengompilasi dari 0!
+          make clobber
 
-      - name: Collect
+          # Target spesifik init_boot
+          mka init_bootimage -j$(nproc)
+
+      - name: Collect & Verify Artifacts
         run: |
           mkdir -p workspace/output
+          
+          # Cek ketersediaan file init_boot.img
+          if [ -f workspace/out/target/product/RMX3760/init_boot.img ]; then
+            cp workspace/out/target/product/RMX3760/init_boot.img workspace/output/twrp_init_boot.img
+            echo "SUCCESS: init_boot.img berhasil dibuat!"
+          else
+            echo "ERROR: init_boot.img TIDAK DITEMUKAN!"
+            exit 1
+          fi
 
-          cp workspace/out/target/product/RMX3760/init_boot.img workspace/output/ || true
-          cp workspace/out/target/product/RMX3760/ramdisk-recovery.cpio workspace/output/ || true
-          cp workspace/out/target/product/RMX3760/recovery.img workspace/output/ || true
-
-      - name: Upload
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TWRP_RMX3760
-          path: workspace/output/*
+          name: TWRP_RMX3760_Android15
+          path: workspace/output/twrp_init_boot.img
