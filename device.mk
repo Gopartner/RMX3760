@@ -15,8 +15,6 @@ AB_OTA_POSTINSTALL_CONFIG += \
 
 # Boot control HAL
 PRODUCT_PACKAGES += \
-    android.hardware.boot@1.0-impl \
-    android.hardware.boot@1.0-service
 
 PRODUCT_PACKAGES += \
     otapreopt_script \
@@ -27,10 +25,3 @@ PRODUCT_PACKAGES += \
 
 # BOOT CONTROL
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/recovery/root/system/lib64/hw/bootctrl.default.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/hw/bootctrl.default.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot-V1-ndk.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/android.hardware.boot-V1-ndk.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/libboot_control_client_unisoc.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libboot_control_client_unisoc.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/libproduction_client_unisoc.so:$(TARGET_COPY_OUT_RECOVERY)/root/system/lib64/libproduction_client_unisoc.so
