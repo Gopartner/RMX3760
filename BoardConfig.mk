@@ -121,7 +121,7 @@ TARGET_COPY_OUT_VENDOR := vendor
 # Super Dynamic Partitions
 BOARD_SUPER_PARTITION_SIZE := 8388608000
 BOARD_SUPER_PARTITION_GROUPS := realme_dynamic_partitions
-BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm system_dlkm
+BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := system system_ext vendor odm product vendor_dlkm
 BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 8384413696
 
 # Platform
