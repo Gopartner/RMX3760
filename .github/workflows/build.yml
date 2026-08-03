@@ -1,4 +1,4 @@
-name: Build TWRP RMX3760 Android 15 (init_boot)
+name: Build TWRP RMX3760 Android 15
 
 on:
   workflow_dispatch:
@@ -79,7 +79,7 @@ jobs:
         with:
           path: workspace/device/realme/RMX3760
 
-      - name: Build TWRP (Target: init_boot)
+      - name: Build
         run: |
           cd workspace
 
@@ -90,20 +90,18 @@ jobs:
 
           lunch twrp_RMX3760-eng
 
-          # Target utama untuk Android 13 - 15 (Boot Header v4)
           mka init_bootimage -j$(nproc) || mka recoveryimage -j$(nproc)
 
-      - name: Collect Output Artifacts
+      - name: Collect
         run: |
           mkdir -p workspace/output
 
-          # Salin file init_boot.img dan recovery/ramdisk jika ada
           cp workspace/out/target/product/RMX3760/init_boot.img workspace/output/ || true
           cp workspace/out/target/product/RMX3760/ramdisk-recovery.cpio workspace/output/ || true
           cp workspace/out/target/product/RMX3760/recovery.img workspace/output/ || true
 
-      - name: Upload TWRP Artifacts
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: TWRP_RMX3760_Android15
+          name: TWRP_RMX3760
           path: workspace/output/*
