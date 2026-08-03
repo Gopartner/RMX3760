@@ -35,7 +35,14 @@ jobs:
           ln -sf /usr/bin/repo ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Repo init & Repo Sync
+      # 1. Checkout Device Tree dulu ke folder sementara (Aman dari wipe)
+      - name: Checkout Device Tree
+        uses: actions/checkout@v4
+        with:
+          path: device_tree_temp
+
+      # 2. Init & Sync TWRP Manifest Source
+      - name: Init TWRP Source
         run: |
           mkdir -p workspace
           cd workspace
@@ -44,30 +51,30 @@ jobs:
           repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
           repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc)
 
-      - name: Checkout Device Tree
-        uses: actions/checkout@v4
-        with:
-          path: workspace/device/realme/RMX3760
+      # 3. Pindahkan Device Tree ke lokasi AOSP setelah repo sync tuntas
+      - name: Setup Device Tree Location
+        run: |
+          mkdir -p workspace/device/realme/RMX3760
+          cp -r device_tree_temp/* workspace/device/realme/RMX3760/
+          rm -rf device_tree_temp
 
-      - name: Clean & Build
+      # 4. Process Build murni untuk target init_boot
+      - name: Build TWRP
         run: |
           cd workspace
           export ALLOW_MISSING_DEPENDENCIES=true
           export LC_ALL=C
           source build/envsetup.sh
+          
           lunch twrp_RMX3760-eng
 
-          # Hapus sisa-sisa cache build sebelumnya biar Ninja BENAR-BENAR mengompilasi dari 0!
-          make clobber
-
-          # Target spesifik init_boot
+          # Kompilasi murni target init_bootimage
           mka init_bootimage -j$(nproc)
 
       - name: Collect & Verify Artifacts
         run: |
           mkdir -p workspace/output
           
-          # Cek ketersediaan file init_boot.img
           if [ -f workspace/out/target/product/RMX3760/init_boot.img ]; then
             cp workspace/out/target/product/RMX3760/init_boot.img workspace/output/twrp_init_boot.img
             echo "SUCCESS: init_boot.img berhasil dibuat!"
