@@ -40,38 +40,50 @@ PRODUCT_PACKAGES += \
     update_verifier \
     update_engine_sideload
 
-# Boot Control HAL (Khas Unisoc T612 / ums9230 AIDL)
+# Boot Control HAL (AIDL Source AOSP)
 PRODUCT_PACKAGES += \
     android.hardware.boot-service.default_recovery
 
-# 1. Salin Root Script, Manifest VINTF (.xml), Init Scripts (.rc), dan Partition Table (fstab)
+# 1. Salin Init Scripts (.rc), Manifest VINTF (.xml), dan Partition Table (fstab)
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/init.recovery.common.rc:recovery/root/init.recovery.common.rc \
     $(LOCAL_PATH)/recovery/root/servicemanager.recovery.rc:recovery/root/servicemanager.recovery.rc \
-    $(LOCAL_PATH)/recovery/root/android.hardware.boot-service.default_recovery.rc:recovery/root/system/etc/init/android.hardware.boot-service.default_recovery.rc \
     $(LOCAL_PATH)/recovery/root/system/etc/init/android.hardware.boot-service.default_recovery.rc:recovery/root/system/etc/init/android.hardware.boot-service.default_recovery.rc \
     $(LOCAL_PATH)/recovery/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc:recovery/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc \
     $(LOCAL_PATH)/recovery/root/system/etc/recovery.fstab:recovery/root/system/etc/recovery.fstab \
     $(LOCAL_PATH)/recovery/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml:recovery/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml
 
-# 2. Salin Kedua Binary Executable Asli dari system/bin/hw/ (Presisi 1:1 Tanpa Pengubahan Nama)
+# 2. Salin Binary Executable Unisoc dari system/bin/hw/ (Presisi 1:1)
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/bin/hw/android.hardware.boot-service.default_recovery:recovery/root/system/bin/hw/android.hardware.boot-service.default_recovery \
     $(LOCAL_PATH)/recovery/root/system/bin/hw/vendor.sprd.hardware.boot-service.default_recovery:recovery/root/system/bin/hw/vendor.sprd.hardware.boot-service.default_recovery
 
-# 3. Salin Seluruh Shared Library (.so) Asli dari system/lib64/ dan system/lib64/hw/
+# 3. Salin Shared Library (.so) Vendor Unisoc dari Stock Dump
+# NOTE: android.hardware.boot@1.0-impl-1.2.so sengaja TIDAK dimasukkan di sini untuk mencegah error Kati
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot-V1-ndk.so:recovery/root/system/lib64/android.hardware.boot-V1-ndk.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so:recovery/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so:recovery/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/libboot_control_client_unisoc.so:recovery/root/system/lib64/libboot_control_client_unisoc.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/libproduction_client_unisoc.so:recovery/root/system/lib64/libproduction_client_unisoc.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so:recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/hw/bootctrl.default.so:recovery/root/system/lib64/hw/bootctrl.default.so
 
-# 4. Salin Konfigurasi ueventd Hardware Unisoc T612 yang Ada di Tree
+# 4. Salin Seluruh Konfigurasi ueventd Hardware Unisoc T612
 PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/recovery/root/ueventd.uis7863_6h10.rc:recovery/root/ueventd.uis7863_6h10.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.uis7863_6h10_go.rc:recovery/root/ueventd.uis7863_6h10_go.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.uis7865_6h10.rc:recovery/root/ueventd.uis7865_6h10.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.uis7865_6h10_go.rc:recovery/root/ueventd.uis7865_6h10_go.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_14c10_go.rc:recovery/root/ueventd.ums9230_14c10_go.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_1h10.rc:recovery/root/ueventd.ums9230_1h10.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_1h10_go.rc:recovery/root/ueventd.ums9230_1h10_go.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_4h10.rc:recovery/root/ueventd.ums9230_4h10.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_4h10_go.rc:recovery/root/ueventd.ums9230_4h10_go.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_6h10.rc:recovery/root/ueventd.ums9230_6h10.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_6h10_go.rc:recovery/root/ueventd.ums9230_6h10_go.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_dhaka.rc:recovery/root/ueventd.ums9230_dhaka.rc \
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_dhaka_go.rc:recovery/root/ueventd.ums9230_dhaka_go.rc \
     $(LOCAL_PATH)/recovery/root/ueventd.ums9230_hulk.rc:recovery/root/ueventd.ums9230_hulk.rc \
     $(LOCAL_PATH)/recovery/root/ueventd.ums9230_hulkU.rc:recovery/root/ueventd.ums9230_hulkU.rc \
-    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_1h10.rc:recovery/root/ueventd.ums9230_1h10.rc \
-    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_6h10.rc:recovery/root/ueventd.ums9230_6h10.rc
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_latte.rc:recovery/root/ueventd.ums9230_latte.rc
+
