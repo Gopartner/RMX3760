@@ -69,7 +69,7 @@ jobs:
           lunch twrp_RMX3760-eng
 
           # Kompilasi murni target init_bootimage
-          mka init_bootimage -j$(nproc)
+          mka bootimage -j$(nproc)
 
       - name: Collect & Verify Artifacts
         run: |
