@@ -5,21 +5,26 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-# Inherit from those products. Most specific first.
+# Inherit Arsitektur 64-bit & AOSP Base (Minimal for TWRP)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base.mk)
 
-# Inherit from RMX3760 device
+# Inherit dari device.mk Lokal
 $(call inherit-product, device/realme/RMX3760/device.mk)
 
+# Inherit Konfigurasi Utama TWRP
+$(call inherit-product, vendor/twrp/config/common.mk)
+
+# Identitas Produk
 PRODUCT_DEVICE := RMX3760
 PRODUCT_NAME := twrp_RMX3760
 PRODUCT_BRAND := realme
-PRODUCT_MODEL := RMX3760_full
+PRODUCT_MODEL := Realme C53
 PRODUCT_MANUFACTURER := realme
 
 PRODUCT_GMS_CLIENTID_BASE := android-oppo
 
+# Build Fingerprint & Prop Overrides dari Firmware Asli
 PRODUCT_BUILD_PROP_OVERRIDES += \
     PRIVATE_BUILD_DESC="RMX3760_full-user 15 AP3A.240905.015.A2 40 release-keys"
 
