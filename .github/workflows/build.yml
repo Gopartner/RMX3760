@@ -51,31 +51,29 @@ jobs:
           repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-14
           repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc)
 
-      # 3. Pindahkan Device Tree ke lokasi AOSP setelah repo sync tuntas
+            # 3. Pindahkan Device Tree ke lokasi AOSP setelah repo sync tuntas
       - name: Setup Device Tree Location
         run: |
           mkdir -p workspace/device/realme/RMX3760
           cp -r device_tree_temp/* workspace/device/realme/RMX3760/
           rm -rf device_tree_temp
 
-            # 4. Process Build murni untuk target init_boot
-      run: |
-        cd workspace
-        export ALLOW_MISSING_DEPENDENCIES=true
-        export LC_ALL=C
-        source build/envsetup.sh
-
-        # FORMAT BARU: Menambahkan parameter release trunk_staging khas Android 14/15
-        lunch twrp_RMX3760-trunk_staging-eng
-
-        # Kompilasi resmi menggunakan target init_bootimage
-        mka init_bootimage -j$(nproc)
+      # 4. Process Build murni untuk target init_boot (PERBAIKAN DI SINI)
+      - name: Process Build init_boot
+        run: |
+          cd workspace
+          export ALLOW_MISSING_DEPENDENCIES=true
+          export LC_ALL=C
+          source build/envsetup.sh
+          # FORMAT BARU: Menambahkan parameter release trunk_staging khas Android 14/15
+          lunch twrp_RMX3760-trunk_staging-eng
+          # Kompilasi resmi menggunakan target init_bootimage
+          mka init_bootimage -j$(nproc)
 
       # 5. Collect & Verify Artifacts
       - name: Collect & Verify Artifacts
         run: |
           mkdir -p workspace/output
-
           # Jalur out wajib diselaraskan dengan hasil lunch trunk_staging
           if [ -f workspace/out/target/product/twrp_RMX3760/init_boot.img ]; then
             cp workspace/out/target/product/twrp_RMX3760/init_boot.img workspace/output/twrp_init_boot.img
