@@ -101,6 +101,12 @@ jobs:
 
           source build/envsetup.sh
 
+          echo "===== PRODUCTS ====="
+          list_products
+
+          echo "===== RELEASES ====="
+          list_releases
+
           lunch twrp_RMX3760-eng
 
           mka vendorbootimage -j$(nproc)
