@@ -85,5 +85,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/ueventd.ums9230_dhaka_go.rc:recovery/root/ueventd.ums9230_dhaka_go.rc \
     $(LOCAL_PATH)/recovery/root/ueventd.ums9230_hulk.rc:recovery/root/ueventd.ums9230_hulk.rc \
     $(LOCAL_PATH)/recovery/root/ueventd.ums9230_hulkU.rc:recovery/root/ueventd.ums9230_hulkU.rc \
-    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_latte.rc:recovery/root/ueventd.ums9230_latte.rc
-
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_latte.rc:recovery/root/ueventd.ums9230_latte.rc \
+    $(LOCAL_PATH)/recovery/root/first_stage_ramdisk/fstab.ums9230_hulk:recovery/root/first_stage_ramdisk/fstab.ums9230_hulk \
+    $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so:recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so
