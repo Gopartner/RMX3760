@@ -58,34 +58,30 @@ jobs:
           cp -r device_tree_temp/* workspace/device/realme/RMX3760/
           rm -rf device_tree_temp
 
-      # 4. Process Build murni untuk target init_boot (Menggunakan perintah asli Android 14)
-      - name: Build TWRP
-        run: |
-          cd workspace
-          export ALLOW_MISSING_DEPENDENCIES=true
-          export LC_ALL=C
-          source build/envsetup.sh
+            # 4. Process Build murni untuk target init_boot
+      run: |
+        cd workspace
+        export ALLOW_MISSING_DEPENDENCIES=true
+        export LC_ALL=C
+        source build/envsetup.sh
 
-          lunch twrp_RMX3760-eng
+        # FORMAT BARU: Menambahkan parameter release trunk_staging khas Android 14/15
+        lunch twrp_RMX3760-trunk_staging-eng
 
-          # Kompilasi resmi menggunakan target init_bootimage
-          mka init_bootimage -j$(nproc)
+        # Kompilasi resmi menggunakan target init_bootimage
+        mka init_bootimage -j$(nproc)
 
-
+      # 5. Collect & Verify Artifacts
       - name: Collect & Verify Artifacts
         run: |
           mkdir -p workspace/output
-          
-          if [ -f workspace/out/target/product/RMX3760/init_boot.img ]; then
-            cp workspace/out/target/product/RMX3760/init_boot.img workspace/output/twrp_init_boot.img
+
+          # Jalur out wajib diselaraskan dengan hasil lunch trunk_staging
+          if [ -f workspace/out/target/product/twrp_RMX3760/init_boot.img ]; then
+            cp workspace/out/target/product/twrp_RMX3760/init_boot.img workspace/output/twrp_init_boot.img
             echo "SUCCESS: init_boot.img berhasil dibuat!"
           else
-            echo "ERROR: init_boot.img TIDAK DITEMUKAN!"
+            echo "ERROR: init_boot.img TIDAK DITEMUKAN DI JALUR BUILD!"
             exit 1
           fi
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: TWRP_RMX3760_Android15
-          path: workspace/output/twrp_init_boot.img
