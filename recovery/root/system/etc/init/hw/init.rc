@@ -48,6 +48,8 @@ on init
 
     # Start essential services
     start servicemanager
+    start hwservicemanager
+    start vndservicemanager
 
     mkdir nuovo 0770 system system
     mount ext4 /dev/block/mmcblk0p1 /nuovo
@@ -59,7 +61,7 @@ on boot
 
     class_start default
     class_start hal
-
+    class_start early_hal
 on firmware_mounts_complete
    rm /dev/.booting
 

@@ -40,7 +40,7 @@ PRODUCT_PACKAGES += \
     update_verifier \
     update_engine_sideload
 
-# Boot Control HAL (AIDL Source AOSP)
+# Boot HAL (AOSP Android 15)
 PRODUCT_PACKAGES += \
     android.hardware.boot-service.default_recovery
 
@@ -48,15 +48,13 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/etc/init/hw/init.rc:recovery/root/system/etc/init/hw/init.rc \
     $(LOCAL_PATH)/recovery/root/init.recovery.common.rc:recovery/root/init.recovery.common.rc \
-    $(LOCAL_PATH)/recovery/root/system/etc/init/servicemanager.recovery.rc:recovery/root/sytem/etc/init/servicemanager.recovery.rc \
-    $(LOCAL_PATH)/recovery/root/system/etc/init/android.hardware.boot-service.default_recovery.rc:recovery/root/system/etc/init/android.hardware.boot-service.default_recovery.rc \
+    $(LOCAL_PATH)/recovery/root/system/etc/init/servicemanager.recovery.rc:recovery/root/system/etc/init/servicemanager.recovery.rc \
     $(LOCAL_PATH)/recovery/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc:recovery/root/system/etc/init/vendor.sprd.hardware.boot-service.default_recovery.rc \
     $(LOCAL_PATH)/recovery/root/system/etc/recovery.fstab:recovery/root/system/etc/recovery.fstab \
     $(LOCAL_PATH)/recovery/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml:recovery/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml
 
 # 2. Salin Binary Executable Unisoc dari system/bin/hw/ (Presisi 1:1)
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/recovery/root/system/bin/hw/android.hardware.boot-service.default_recovery:recovery/root/system/bin/hw/android.hardware.boot-service.default_recovery \
     $(LOCAL_PATH)/recovery/root/system/bin/hw/vendor.sprd.hardware.boot-service.default_recovery:recovery/root/system/bin/hw/vendor.sprd.hardware.boot-service.default_recovery
 
 # 3. Salin Shared Library (.so) Vendor Unisoc dari Stock Dump
@@ -88,3 +86,10 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/ueventd.ums9230_latte.rc:recovery/root/ueventd.ums9230_latte.rc \
     $(LOCAL_PATH)/recovery/root/first_stage_ramdisk/fstab.ums9230_hulk:recovery/root/first_stage_ramdisk/fstab.ums9230_hulk \
     $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so:recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so
+
+# 5. modules.load
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/recovery/root/lib/modules/modules.dep:recovery/root/lib/modules/modules.dep \
+    $(LOCAL_PATH)/recovery/root/lib/modules/modules.load:recovery/root/lib/modules/modules.load \
+    $(LOCAL_PATH)/recovery/root/lib/modules/modules.load.recovery:recovery/root/lib/modules/modules.load.recovery
+

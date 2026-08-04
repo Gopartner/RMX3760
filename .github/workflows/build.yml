@@ -25,61 +25,112 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
-            git-core repo gnupg flex bison build-essential zip curl \
-            zlib1g-dev libc6-dev-i386 lib32z1-dev lib32ncurses6 libncurses5-dev \
-            libxml2-utils xsltproc unzip python3 python-is-python3 rsync cpio lz4 bc
+            git-core \
+            repo \
+            gnupg \
+            flex \
+            bison \
+            build-essential \
+            zip \
+            curl \
+            zlib1g-dev \
+            libc6-dev-i386 \
+            lib32z1-dev \
+            lib32ncurses6 \
+            libncurses5-dev \
+            libxml2-utils \
+            xsltproc \
+            unzip \
+            python3 \
+            python-is-python3 \
+            rsync \
+            cpio \
+            lz4 \
+            bc
 
-      - name: Prepare repo
+      - name: Prepare Repo
         run: |
           mkdir -p ~/bin
           ln -sf /usr/bin/repo ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      # 1. Checkout Device Tree dulu ke folder sementara (Aman dari wipe)
       - name: Checkout Device Tree
         uses: actions/checkout@v4
         with:
           path: device_tree_temp
 
-           # 2. Init & Sync TWRP Manifest Source (Diperbarui ke cabang twrp-14)
       - name: Init TWRP Source
         run: |
-          mkdir -p workspace
+          mkdir workspace
           cd workspace
+
           git config --global user.name "arriRgb31"
           git config --global user.email "febyyusuf12345@gmail.com"
-          repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-14
-          repo sync -c --force-sync --no-clone-bundle --no-tags -j$(nproc)
 
-            # 3. Pindahkan Device Tree ke lokasi AOSP setelah repo sync tuntas
-      - name: Setup Device Tree Location
+          repo init \
+            -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
+            -b twrp-14 \
+            --depth=1
+
+          repo sync \
+            -c \
+            --force-sync \
+            --optimized-fetch \
+            --no-clone-bundle \
+            --no-tags \
+            -j$(nproc)
+
+      - name: Copy Device Tree
         run: |
           mkdir -p workspace/device/realme/RMX3760
-          cp -r device_tree_temp/* workspace/device/realme/RMX3760/
+          cp -a device_tree_temp/. workspace/device/realme/RMX3760/
           rm -rf device_tree_temp
 
-      # 4. Process Build murni untuk target init_boot (PERBAIKAN DI SINI)
-      - name: Process Build init_boot
+      - name: Verify Device Tree
+        run: |
+          ls -R workspace/device/realme/RMX3760
+
+      - name: Build Vendor Boot
         run: |
           cd workspace
-          export ALLOW_MISSING_DEPENDENCIES=true
-          export LC_ALL=C
-          source build/envsetup.sh
-          # FORMAT BARU: Menambahkan parameter release trunk_staging khas Android 14/15
-          lunch twrp_RMX3760-trunk_staging-eng
-          # Kompilasi resmi menggunakan target init_bootimage
-          mka init_bootimage -j$(nproc)
 
-      # 5. Collect & Verify Artifacts
-      - name: Collect & Verify Artifacts
+          export ALLOW_MISSING_DEPENDENCIES=true
+          export SOONG_ALLOW_MISSING_DEPENDENCIES=true
+          export BUILD_BROKEN_MISSING_BUILD_REQUIREMENTS=true
+          export LC_ALL=C
+
+          source build/envsetup.sh
+
+          lunch twrp_RMX3760-eng
+
+          mka vendorbootimage -j$(nproc)
+
+      - name: Verify Output
+        run: |
+          cd workspace
+
+          echo "========== OUTPUT =========="
+          find out/target/product -type f \
+            \( \
+              -name "*.img" \
+              -o -name "*.zip" \
+            \)
+
+      - name: Collect Artifact
         run: |
           mkdir -p workspace/output
-          # Jalur out wajib diselaraskan dengan hasil lunch trunk_staging
-          if [ -f workspace/out/target/product/twrp_RMX3760/init_boot.img ]; then
-            cp workspace/out/target/product/twrp_RMX3760/init_boot.img workspace/output/twrp_init_boot.img
-            echo "SUCCESS: init_boot.img berhasil dibuat!"
-          else
-            echo "ERROR: init_boot.img TIDAK DITEMUKAN DI JALUR BUILD!"
+
+          find workspace/out/target/product \
+            -name "vendor_boot.img" \
+            -exec cp {} workspace/output/twrp_vendor_boot.img \;
+
+          if [ ! -f workspace/output/twrp_vendor_boot.img ]; then
+            echo "vendor_boot.img not found!"
             exit 1
           fi
 
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: twrp_vendor_boot
+          path: workspace/output/twrp_vendor_boot.img
