@@ -1,21 +1,23 @@
 #
-# Copyright (C) 2026 The Android Open Source Project
-# Copyright (C) 2026 SebaUbuntu's TWRP device tree generator
+# Copyright (C) 2022 The TWRP Open Source Project
 #
-# SPDX-License-Identifier: Apache-2.0
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
 #
 
-# Inherit Arsitektur 64-bit & AOSP Base (Minimal for TWRP)
+# Inherit from those products. Most specific first.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
-# Inherit dari device.mk Lokal
+# Inherit some common twrp stuff.
+$(call inherit-product-if-exists, vendor/twrp/config/common.mk)
+
+# Inherit some common pb stuff.
+$(call inherit-product-if-exists, vendor/pb/config/common.mk)
+
+# Inherit from RMX3760 device
 $(call inherit-product, device/realme/RMX3760/device.mk)
 
-# Inherit Konfigurasi Utama TWRP
-$(call inherit-product, vendor/twrp/config/common.mk)
-
-# Identitas Produk
 PRODUCT_DEVICE := RMX3760
 PRODUCT_NAME := twrp_RMX3760
 PRODUCT_BRAND := realme
@@ -24,7 +26,6 @@ PRODUCT_MANUFACTURER := realme
 
 PRODUCT_GMS_CLIENTID_BASE := android-oppo
 
-# Build Fingerprint & Prop Overrides dari Firmware Asli
 PRODUCT_BUILD_PROP_OVERRIDES += \
     PRIVATE_BUILD_DESC="RMX3760_full-user 15 AP3A.240905.015.A2 40 release-keys"
 
