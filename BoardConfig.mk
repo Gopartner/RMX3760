@@ -52,6 +52,7 @@ TARGET_SCREEN_DENSITY := 320
 
 # Kernel & Header Version (Android 13 - 15 GKI)
 BOARD_BOOTIMG_HEADER_VERSION := 4
+BOARD_BOOT_HEADER_VERSION := 4
 BOARD_BUILD_INIT_BOOT_HEADER_VERSION := 4
 BOARD_INIT_BOOT_HEADER_VERSION := 4
 
@@ -70,7 +71,7 @@ BOARD_KERNEL_TAGS_OFFSET := 0x00000100
 BOARD_KERNEL_CMDLINE := console=ttyS1,115200n8 bootconfig bootconfig
 BOARD_BOOTCONFIG := androidboot.hardware=ums9230 androidboot.boot_devices=soc/soc:ap-ahb/20600000.sdio
 
-BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
+BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 BOARD_MKBOOTIMG_ARGS += --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --bootconfig "$(BOARD_BOOTCONFIG)"
@@ -148,7 +149,10 @@ TW_INCLUDE_LIBRESETPROP := true
 # Linker NDK untuk HAL Recovery
 TARGET_RECOVERY_DEVICE_MODULES += \
     libbinder_ndk \
-    libc++
+    libc++ \
+    libbase \
+    libcutils \
+    libutils
 
 # Vendor modules
 BOARD_VNDK_VERSION := current
@@ -159,9 +163,8 @@ LIB_MODULES := $(wildcard $(DEVICE_PATH)/recovery/root/lib/modules/*.ko)
 
 BOARD_VENDOR_RAMDISK_KERNEL_MODULES := $(LIB_MODULES)
 
-BOARD_VENDOR_RAMDISK_KERNEL_MODULES_LOAD := $(shell \
-    sed 's#^#$(DEVICE_PATH)/recovery/root/lib/modules/#' \
-    $(DEVICE_PATH)/recovery/root/lib/modules/modules.load.recovery)
+BOARD_VENDOR_RAMDISK_KERNEL_MODULES_LOAD := \
+    $(DEVICE_PATH)/recovery/root/lib/modules/modules.load.recovery
 
 TW_LOAD_VENDOR_MODULES := $(shell cat \
     $(DEVICE_PATH)/recovery/root/lib/modules/modules.load.recovery)

@@ -24,13 +24,7 @@ AB_OTA_POSTINSTALL_CONFIG += \
 PRODUCT_PACKAGES += \
     fastbootd \
     resetprop \
-    setprop \
-    libbinder_ndk \
-    libc++ \
-    libutils \
-    libcutils \
-    libhardware \
-    libbase
+    setprop
 
 # Paket A/B Update Engine & Post-install Script
 PRODUCT_PACKAGES += \
@@ -91,5 +85,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/lib/modules/modules.dep:recovery/root/lib/modules/modules.dep \
     $(LOCAL_PATH)/recovery/root/lib/modules/modules.load:recovery/root/lib/modules/modules.load \
-    $(LOCAL_PATH)/recovery/root/lib/modules/modules.load.recovery:recovery/root/lib/modules/modules.load.recovery
-
+    $(LOCAL_PATH)/recovery/root/lib/modules/modules.load.recovery:recovery/root/lib/modules/modules.load.recovery \
+    $(LOCAL_PATH)/recovery/root/lib/modules/modules.alias:recovery/root/lib/modules/modules.alias \
+    $(LOCAL_PATH)/recovery/root/lib/modules/modules.softdep:recovery/root/lib/modules/modules.softdep
