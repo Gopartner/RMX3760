@@ -52,8 +52,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so:recovery/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so:recovery/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/libboot_control_client_unisoc.so:recovery/root/system/lib64/libboot_control_client_unisoc.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/libproduction_client_unisoc.so:recovery/root/system/lib64/libproduction_client_unisoc.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so:recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so
+    $(LOCAL_PATH)/recovery/root/system/lib64/libproduction_client_unisoc.so:recovery/root/system/lib64/libproduction_client_unisoc.so
 
 # 4. ueventd
 PRODUCT_COPY_FILES += \
