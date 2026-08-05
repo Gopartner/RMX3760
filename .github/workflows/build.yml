@@ -65,7 +65,7 @@ jobs:
           cd workspace
 
           git config --global user.name "arriRgb31"
-          git config --global user.email "febyyusuf12345@gmail.com"
+          git config --global user.email "240433352+arriRgb31@users.noreply.github.com"
 
           repo init \
             -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
@@ -101,13 +101,7 @@ jobs:
 
           source build/envsetup.sh
 
-          echo "===== PRODUCTS ====="
-          list_products
-
-          echo "===== RELEASES ====="
-          list_releases
-
-          lunch twrp_RMX3760-eng
+          twrp_RMX3760-trunk_staging-eng
 
           mka vendorbootimage -j$(nproc)
 
