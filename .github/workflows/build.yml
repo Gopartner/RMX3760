@@ -101,7 +101,7 @@ jobs:
 
           source build/envsetup.sh
 
-          twrp_RMX3760-trunk_staging-eng
+          lunch twrp_RMX3760-trunk_staging-eng
 
           mka vendorbootimage -j$(nproc)
 
