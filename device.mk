@@ -20,7 +20,7 @@ AB_OTA_POSTINSTALL_CONFIG += \
     FILESYSTEM_TYPE_system=erofs \
     POSTINSTALL_OPTIONAL_system=true
 
-# Paket Utilitas, Fastbootd & Dependensi NDK/C++ Runtime
+# Paket Utilitas
 PRODUCT_PACKAGES += \
     fastbootd \
     resetprop \
@@ -34,11 +34,7 @@ PRODUCT_PACKAGES += \
     update_verifier \
     update_engine_sideload
 
-# Boot HAL (AOSP Android 15)
-PRODUCT_PACKAGES += \
-    android.hardware.boot-service.default_recovery
-
-# 1. Salin Init Scripts (.rc), Manifest VINTF (.xml), dan Partition Table (fstab)
+# 1. Init scripts, VINTF & recovery.fstab
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/etc/init/hw/init.rc:recovery/root/system/etc/init/hw/init.rc \
     $(LOCAL_PATH)/recovery/root/init.recovery.common.rc:recovery/root/init.recovery.common.rc \
@@ -47,20 +43,20 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/etc/recovery.fstab:recovery/root/system/etc/recovery.fstab \
     $(LOCAL_PATH)/recovery/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml:recovery/root/system/etc/vintf/manifest/vendor.sprd.hardware.boot-service.default.xml
 
-# 2. Salin Binary Executable Unisoc dari system/bin/hw/ (Presisi 1:1)
+# 2. Vendor Boot HAL Binary
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/bin/hw/vendor.sprd.hardware.boot-service.default_recovery:recovery/root/system/bin/hw/vendor.sprd.hardware.boot-service.default_recovery
 
-# 3. Salin Shared Library (.so) Vendor Unisoc dari Stock Dump
-# NOTE: android.hardware.boot@1.0-impl-1.2.so sengaja TIDAK dimasukkan di sini untuk mencegah error Kati
+# 3. Vendor Boot HAL Libraries
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/lib64/android.hardware.boot-V1-ndk.so:recovery/root/system/lib64/android.hardware.boot-V1-ndk.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so:recovery/root/system/lib64/vendor.sprd.hardware.boot-V1-ndk.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so:recovery/root/system/lib64/vendor.sprd.hardware.production-V1-ndk.so \
     $(LOCAL_PATH)/recovery/root/system/lib64/libboot_control_client_unisoc.so:recovery/root/system/lib64/libboot_control_client_unisoc.so \
-    $(LOCAL_PATH)/recovery/root/system/lib64/libproduction_client_unisoc.so:recovery/root/system/lib64/libproduction_client_unisoc.so
+    $(LOCAL_PATH)/recovery/root/system/lib64/libproduction_client_unisoc.so:recovery/root/system/lib64/libproduction_client_unisoc.so \
+    $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so:recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so
 
-# 4. Salin Seluruh Konfigurasi ueventd Hardware Unisoc T612
+# 4. ueventd
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/ueventd.uis7863_6h10.rc:recovery/root/ueventd.uis7863_6h10.rc \
     $(LOCAL_PATH)/recovery/root/ueventd.uis7863_6h10_go.rc:recovery/root/ueventd.uis7863_6h10_go.rc \
@@ -77,11 +73,13 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/ueventd.ums9230_dhaka_go.rc:recovery/root/ueventd.ums9230_dhaka_go.rc \
     $(LOCAL_PATH)/recovery/root/ueventd.ums9230_hulk.rc:recovery/root/ueventd.ums9230_hulk.rc \
     $(LOCAL_PATH)/recovery/root/ueventd.ums9230_hulkU.rc:recovery/root/ueventd.ums9230_hulkU.rc \
-    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_latte.rc:recovery/root/ueventd.ums9230_latte.rc \
-    $(LOCAL_PATH)/recovery/root/first_stage_ramdisk/fstab.ums9230_hulk:recovery/root/first_stage_ramdisk/fstab.ums9230_hulk \
-    $(LOCAL_PATH)/recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so:recovery/root/system/lib64/hw/android.hardware.boot@1.0-impl-1.2.so
+    $(LOCAL_PATH)/recovery/root/ueventd.ums9230_latte.rc:recovery/root/ueventd.ums9230_latte.rc
 
-# 5. modules.load
+# 5. first_stage_ramdisk
+PRODUCT_COPY_FILES += \
+    $(call find-copy-subdir-files,*,$(LOCAL_PATH)/recovery/root/first_stage_ramdisk,recovery/root/first_stage_ramdisk)
+
+# 6. modules metadata
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/lib/modules/modules.dep:recovery/root/lib/modules/modules.dep \
     $(LOCAL_PATH)/recovery/root/lib/modules/modules.load:recovery/root/lib/modules/modules.load \
