@@ -1,16 +1,11 @@
 #
 # Copyright (C) 2026 The Android Open Source Project
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-#
 
 DEVICE_PATH := device/realme/RMX3760
 
 # Build Hack
 BUILD_BROKEN_DUP_RULES := true
-
-# Building with minimal manifest
 ALLOW_MISSING_DEPENDENCIES := true
 
 # A/B
@@ -50,27 +45,18 @@ TARGET_2ND_CPU_VARIANT_RUNTIME := cortex-a55
 TARGET_BOOTLOADER_BOARD_NAME := ums9230_hulk
 TARGET_NO_BOOTLOADER := true
 
-# Display
 TARGET_SCREEN_DENSITY := 320
-
-# Assert
 TARGET_OTA_ASSERT_DEVICE := RMX3760
 
 # Kernel
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
 
-TARGET_FORCE_PREBUILT_KERNEL := true
-
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
-TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
-
 BOARD_RAMDISK_USE_LZ4 := true
 BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
 BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
 BOARD_USES_GENERIC_KERNEL_IMAGE := true
 
-BOARD_BOOTIMG_HEADER_VERSION := 4
 BOARD_BOOT_HEADER_VERSION := 4
 BOARD_BUILD_INIT_BOOT_HEADER_VERSION := 4
 BOARD_INIT_BOOT_HEADER_VERSION := 4
@@ -86,13 +72,12 @@ BOARD_BOOTCONFIG := \
     androidboot.hardware=ums9230 \
     androidboot.boot_devices=soc/soc:ap-ahb/20600000.sdio
 
-BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
+# DTB
+BOARD_MKBOOTIMG_ARGS += --dtb $(DEVICE_PATH)/prebuilt/dtb
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 BOARD_MKBOOTIMG_ARGS += --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --bootconfig "$(BOARD_BOOTCONFIG)"
-
-BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 
 # Partitions
 BOARD_FLASH_BLOCK_SIZE := 262144
@@ -143,27 +128,21 @@ BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := \
 
 BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 8384413696
 
-# Platform
 TARGET_BOARD_PLATFORM := ums9230
 
-# Verified Boot
 BOARD_AVB_ENABLE := true
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 
-# Hack: prevent anti rollback
 PLATFORM_SECURITY_PATCH := 2099-12-31
 VENDOR_SECURITY_PATCH := 2099-12-31
 PLATFORM_VERSION := 16.1.0
 
-# Recovery
 TARGET_NO_RECOVERY := true
-
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 
 TARGET_RECOVERY_FSTAB := \
     $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
 
-# TWRP Configuration
 TW_THEME := portrait_hdpi
 TW_EXTRA_LANGUAGES := true
 TW_SCREEN_BLANK_ON_BOOT := true
@@ -181,11 +160,9 @@ TW_USE_FSCRYPT_POLICY := 2
 TW_INCLUDE_LIBRESETPROP := true
 TW_INCLUDE_RESETPROP := true
 
-# Logs
 TARGET_USES_LOGD := true
 TWRP_INCLUDE_LOGCAT := true
 
-# Recovery modules
 TARGET_RECOVERY_DEVICE_MODULES += \
     libbinder_ndk \
     libc++ \
@@ -193,7 +170,6 @@ TARGET_RECOVERY_DEVICE_MODULES += \
     libcutils \
     libutils
 
-# Vendor modules
 BOARD_VNDK_VERSION := current
 
 TW_LOAD_VENDOR_BOOT_MODULES := true
