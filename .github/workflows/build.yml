@@ -69,7 +69,7 @@ jobs:
 
           repo init \
             -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
-            -b twrp-14 \
+            -b twrp-12.1 \
             --depth=1
 
           repo sync \
@@ -101,7 +101,7 @@ jobs:
 
           source build/envsetup.sh
 
-          lunch twrp_RMX3760-trunk_staging-eng
+          lunch twrp_RMX3760-eng
 
           mka vendorbootimage -j$(nproc)
 
