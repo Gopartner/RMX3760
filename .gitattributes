@@ -1,3 +1,0 @@
-# Auto detect text files and perform LF normalization
-* text=auto
-RMX3760_Android15_AB_unpacked.zip filter=lfs diff=lfs merge=lfs -text

@@ -1,6 +1,11 @@
 #
 # Copyright (C) 2026 The Android Open Source Project
+# Copyright (C) 2026 TWRP device tree generator
 #
+# Realme C53 / RMX3760 (UMS9230 / T612) - Android 15
+# Boot header v4, virtual A/B. Values sourced from stock vendor_boot_a.img dump:
+#   page_size=4096 kernel_addr=0x8000 ramdisk_addr=0x5400000 tags=0x100
+#   header_size=2128 dtb_size=134558 dtb_addr=0x1f00000 vendor_ramdisk_size=36105757
 
 DEVICE_PATH := device/realme/RMX3760
 
@@ -52,32 +57,42 @@ TARGET_OTA_ASSERT_DEVICE := RMX3760
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
 
+# No kernel in our TWRP image - kernel stays in stock boot partition.
+# We only ship a recovery ramdisk inside vendor_boot.
+TARGET_NO_KERNEL := true
 BOARD_RAMDISK_USE_LZ4 := true
+BOARD_KERNEL_SEPARATED_DTBO := true
+
+# Prebuilt DTB extracted from stock dump (DTBO-table format, dtb_size=134558)
+TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb
+BOARD_DTB_SIZE := 134558
+
 BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
 BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
-BOARD_USES_GENERIC_KERNEL_IMAGE := true
 
 BOARD_BOOT_HEADER_VERSION := 4
 BOARD_BUILD_INIT_BOOT_HEADER_VERSION := 4
 BOARD_INIT_BOOT_HEADER_VERSION := 4
 
-BOARD_KERNEL_BASE := 0x00000000
-BOARD_KERNEL_PAGESIZE := 4096
+BOARD_KERNEL_BASE := 0x00008000
+BOARD_KERNEL_OFFSET := 0x00008000
+BOARD_PAGE_SIZE := 4096
 BOARD_RAMDISK_OFFSET := 0x05400000
-BOARD_KERNEL_TAGS_OFFSET := 0x00000100
+BOARD_TAGS_OFFSET := 0x00000100
+BOARD_DTB_OFFSET := 0x01f00000
+BOARD_HEADER_SIZE := 2128
 
-BOARD_KERNEL_CMDLINE := console=ttyS1,115200n8 bootconfig bootconfig
+# Stock vendor_boot cmdline (from dump). bootconfig goes into bootconfig section.
+BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8 bootconfig bootconfig
 
-BOARD_BOOTCONFIG := \
-    androidboot.hardware=ums9230 \
-    androidboot.boot_devices=soc/soc:ap-ahb/20600000.sdio
-
-# DTB
-BOARD_MKBOOTIMG_ARGS += --dtb $(DEVICE_PATH)/prebuilt/dtb
-BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
+BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
+BOARD_MKBOOTIMG_ARGS += --vendor_cmdline $(BOARD_VENDOR_CMDLINE)
+BOARD_MKBOOTIMG_ARGS += --pagesize $(BOARD_PAGE_SIZE) --board ""
+BOARD_MKBOOTIMG_ARGS += --kernel_offset $(BOARD_KERNEL_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
-BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
-BOARD_MKBOOTIMG_ARGS += --bootconfig "$(BOARD_BOOTCONFIG)"
+BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_TAGS_OFFSET)
+BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
+BOARD_MKBOOTIMG_ARGS += --dtb_offset $(BOARD_DTB_OFFSET)
 
 # Partitions
 BOARD_FLASH_BLOCK_SIZE := 262144
@@ -130,19 +145,22 @@ BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 8384413696
 
 TARGET_BOARD_PLATFORM := ums9230
 
+# Verified Boot
 BOARD_AVB_ENABLE := true
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 
+# Hack: prevent anti rollback issues during TWRP build
 PLATFORM_SECURITY_PATCH := 2099-12-31
 VENDOR_SECURITY_PATCH := 2099-12-31
 PLATFORM_VERSION := 16.1.0
 
+# Recovery
 TARGET_NO_RECOVERY := true
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
-
 TARGET_RECOVERY_FSTAB := \
     $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
 
+# TWRP Configuration
 TW_THEME := portrait_hdpi
 TW_EXTRA_LANGUAGES := true
 TW_SCREEN_BLANK_ON_BOOT := true
@@ -151,10 +169,12 @@ TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_USE_TOOLBOX := true
 TW_INCLUDE_REPACKTOOLS := true
 
+TW_HAS_NO_RECOVERY_PARTITION := true
+
+# Crypto (fbe v2, metadata partition)
+BOARD_USES_METADATA_PARTITION := true
 TW_INCLUDE_CRYPTO := true
 TW_INCLUDE_CRYPTO_FBE := true
-TW_INCLUDE_CRYPTO_FBE_METADATA := true
-TW_INCLUDE_CRYPTO_FSCRYPT_POLICY := true
 TW_USE_FSCRYPT_POLICY := 2
 
 TW_INCLUDE_LIBRESETPROP := true

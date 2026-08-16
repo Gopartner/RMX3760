@@ -84,6 +84,17 @@ jobs:
           cp -a device_tree/. workspace/device/realme/RMX3760/
           rm -rf device_tree
 
+      - name: Patch minuitwrp graphics
+        # Fixes "Atomic commit failed ret=-22" that prevents TWRP UI from drawing
+        run: |
+          set -e
+          cp workspace/bootable/recovery/minuitwrp/graphics_drm.cpp \
+             workspace/bootable/recovery/minuitwrp/graphics_drm.cpp.orig
+          cp workspace/device/realme/RMX3760/issue_atomic/graphics_drm.cpp \
+             workspace/bootable/recovery/minuitwrp/graphics_drm.cpp
+          echo "--- patched graphics_drm.cpp ---"
+          head -5 workspace/bootable/recovery/minuitwrp/graphics_drm.cpp
+
       - name: Build Vendor Boot
         shell: bash
         run: |
