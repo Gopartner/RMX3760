@@ -95,7 +95,7 @@ jobs:
           echo "--- patched graphics_drm.cpp ---"
           head -5 workspace/bootable/recovery/minuitwrp/graphics_drm.cpp
 
-      - name: Build Vendor Boot
+      - name: Build Recovery
         shell: bash
         run: |
           set -e
@@ -113,25 +113,27 @@ jobs:
 
           echo "========== START BUILD =========="
 
-          mka vendorbootimage -j"$(nproc)"
+          mka recoveryimage vendorbootimage -j"$(nproc)"
 
-      - name: Collect Artifact
+      - name: Collect Artifacts
         shell: bash
         run: |
           set -e
 
           PRODUCT_DIR=$(find workspace/out/target/product -mindepth 1 -maxdepth 1 -type d | head -n1)
 
+          test -f "$PRODUCT_DIR/recovery.img"
           test -f "$PRODUCT_DIR/vendor_boot.img"
 
           mkdir -p output
 
+          cp "$PRODUCT_DIR/recovery.img" output/twrp_recovery.img
           cp "$PRODUCT_DIR/vendor_boot.img" output/twrp_vendor_boot.img
 
           ls -lh output
 
-      - name: Upload Artifact
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: twrp_vendor_boot
-          path: output/twrp_vendor_boot.img
+          name: twrp_images
+          path: output/
