@@ -82,8 +82,9 @@ BOARD_TAGS_OFFSET := 0x00000100
 BOARD_DTB_OFFSET := 0x01f00000
 BOARD_HEADER_SIZE := 2128
 
-# Stock vendor_boot cmdline (from dump). bootconfig goes into bootconfig section.
-BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8 bootconfig bootconfig
+# Stock vendor_boot cmdline (from dump). Note: "bootconfig" is a mkbootimg
+# keyword, not a cmdline token, so it must NOT be in BOARD_VENDOR_CMDLINE.
+BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8
 
 BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
 BOARD_MKBOOTIMG_ARGS += --vendor_cmdline $(BOARD_VENDOR_CMDLINE)
