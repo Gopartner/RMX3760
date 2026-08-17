@@ -201,5 +201,6 @@ BOARD_VENDOR_RAMDISK_KERNEL_MODULES := $(LIB_MODULES)
 BOARD_VENDOR_RAMDISK_KERNEL_MODULES_LOAD := \
     $(DEVICE_PATH)/recovery/root/lib/modules/modules.load.recovery
 
-TW_LOAD_VENDOR_MODULES := $(shell cat \
-    $(DEVICE_PATH)/recovery/root/lib/modules/modules.load.recovery)
+# TW_LOAD_VENDOR_MODULES is a build flag (#ifdef), NOT a module list.
+# A multi-line list here gets split into separate clang args and breaks the build.
+TW_LOAD_VENDOR_MODULES := true
