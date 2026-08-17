@@ -2,295 +2,67 @@ name: Build TWRP RMX3760 Android 15
 
 on:
   workflow_dispatch:
-
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-22.04
-
     permissions:
       contents: read
-
     steps:
+      - uses: actions/checkout@v4
+        with:
+          path: device_tree
+
       - name: Free Disk Space
         run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
           df -h
 
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            git-core \
-            repo \
-            gnupg \
-            flex \
-            bison \
-            build-essential \
-            zip \
-            curl \
-            zlib1g-dev \
-            libc6-dev-i386 \
-            lib32z1-dev \
-            lib32ncurses6 \
-            libncurses5-dev \
-            libxml2-utils \
-            xsltproc \
-            unzip \
-            python3 \
-            python-is-python3 \
-            rsync \
-            cpio \
-            lz4 \
-            bc \
-            android-sdk-libsparse-utils \
-            android-sdk-ext4-utils \
-            libssl-dev \
-            pkg-config
-
-      - name: Install avbtool (for vbmeta signing)
-        run: |
-          pip3 install --user avbtool
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-
-      - name: Prepare Repo
-        run: |
-          mkdir -p ~/bin
-          ln -sf /usr/bin/repo ~/bin/repo
-          echo "$HOME/bin" >> "$GITHUB_PATH"
-
-      - name: Checkout Device Tree
-        uses: actions/checkout@v4
-        with:
-          path: device_tree
+          sudo apt-get install -y git-core repo gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 lib32z1-dev lib32ncurses6 libncurses5-dev libxml2-utils xsltproc unzip python3 python-is-python3 rsync cpio lz4 bc android-sdk-libsparse-utils android-sdk-ext4-utils libssl-dev pkg-config
 
       - name: Init TWRP Source
         run: |
           mkdir workspace
           cd workspace
-
-          repo init \
-            -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
-            -b twrp-12.1 \
-            --depth=1
-
-          repo sync \
-            -c \
-            --force-sync \
-            --optimized-fetch \
-            --no-clone-bundle \
-            --no-tags \
-            -j"$(nproc)"
+          repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1 --depth=1
+          repo sync -c --force-sync --optimized-fetch --no-clone-bundle --no-tags -j"$(nproc)"
 
       - name: Copy Device Tree
         run: |
           mkdir -p workspace/device/realme/RMX3760
           cp -a device_tree/. workspace/device/realme/RMX3760/
-          rm -rf device_tree
 
       - name: Patch minuitwrp graphics
-        # Fixes "Atomic commit failed ret=-22" that prevents TWRP UI from drawing
-        run: |
-          set -e
-          cp workspace/bootable/recovery/minuitwrp/graphics_drm.cpp \
-             workspace/bootable/recovery/minuitwrp/graphics_drm.cpp.orig
-          cp workspace/device/realme/RMX3760/issue_atomic/graphics_drm.cpp \
-             workspace/bootable/recovery/minuitwrp/graphics_drm.cpp
-          echo "--- patched graphics_drm.cpp ---"
-          head -5 workspace/bootable/recovery/minuitwrp/graphics_drm.cpp
+        run: cp workspace/device/realme/RMX3760/issue_atomic/graphics_drm.cpp workspace/bootable/recovery/minuitwrp/graphics_drm.cpp
 
-      - name: Build Recovery Images
+      - name: Build vendor_boot
         shell: bash
         run: |
-          set -e
-          set -o pipefail
-
+          set -euo pipefail
           cd workspace
-
           export ALLOW_MISSING_DEPENDENCIES=true
           export SOONG_ALLOW_MISSING_DEPENDENCIES=true
-          export LC_ALL=C
-
-          source build/envsetup.sh
-
-          lunch twrp_RMX3760-eng
-
-          echo "========== START BUILD =========="
-
-          # Build recovery.img (kernel + ramdisk) and vendor_boot.img (recovery ramdisk)
-          mka recoveryimage vendorbootimage -j"$(nproc)"
-
-      - name: Generate VBMeta Images (AVB)
-        shell: bash
-        run: |
-          set -e
-
-          cd workspace
           source build/envsetup.sh
           lunch twrp_RMX3760-eng
+          mka vendorbootimage -j"$(nproc)"
 
-          PRODUCT_DIR=$(find out/target/product -mindepth 1 -maxdepth 1 -type d | head -n1)
-          AVBTOOL="$HOME/.local/bin/avbtool"
-
-          # Generate test keys if not exist
-          if [ ! -f external/avb/test/data/testkey_rsa4096.pem ]; then
-            mkdir -p external/avb/test/data
-            openssl genrsa -out external/avb/test/data/testkey_rsa4096.pem 4096
-            openssl rsa -in external/avb/test/data/testkey_rsa4096.pem -pubout -out external/avb/test/data/testkey_rsa4096.pem.pub
-          fi
-
-          # vbmeta.img (for boot/init_boot/dtbo)
-          "$AVBTOOL" make_vbmeta_image \
-            --output "$PRODUCT_DIR/vbmeta.img" \
-            --algorithm SHA256_RSA4096 \
-            --key external/avb/test/data/testkey_rsa4096.pem \
-            --rollback_index 0 \
-            --rollback_index_location 1 \
-            --flags 2
-
-          # vbmeta_vendor.img (for vendor_boot)
-          "$AVBTOOL" make_vbmeta_image \
-            --output "$PRODUCT_DIR/vbmeta_vendor.img" \
-            --algorithm SHA256_RSA4096 \
-            --key external/avb/test/data/testkey_rsa4096.pem \
-            --rollback_index 0 \
-            --rollback_index_location 3 \
-            --flags 2
-
-          # vbmeta_system.img (for system/system_ext/product)
-          "$AVBTOOL" make_vbmeta_image \
-            --output "$PRODUCT_DIR/vbmeta_system.img" \
-            --algorithm SHA256_RSA4096 \
-            --key external/avb/test/data/testkey_rsa4096.pem \
-            --rollback_index 0 \
-            --rollback_index_location 2 \
-            --flags 2
-
-          echo "=== VBMeta images generated ==="
-          ls -lh "$PRODUCT_DIR"/vbmeta*.img
-
-      - name: Collect All Artifacts
+      - name: Collect artifact
         shell: bash
         run: |
-          set -e
-
+          set -euo pipefail
           PRODUCT_DIR=$(find workspace/out/target/product -mindepth 1 -maxdepth 1 -type d | head -n1)
-
-          # Required images (built by TWRP)
-          test -f "$PRODUCT_DIR/recovery.img"
           test -f "$PRODUCT_DIR/vendor_boot.img"
-
-          # VBMeta images (generated above)
-          test -f "$PRODUCT_DIR/vbmeta.img"
-          test -f "$PRODUCT_DIR/vbmeta_vendor.img"
-          test -f "$PRODUCT_DIR/vbmeta_system.img"
-
           mkdir -p output
-
-          # TWRP built images
-          cp "$PRODUCT_DIR/recovery.img" output/twrp_recovery.img
           cp "$PRODUCT_DIR/vendor_boot.img" output/twrp_vendor_boot.img
+          ls -lh output/twrp_vendor_boot.img
 
-          # AVB images
-          cp "$PRODUCT_DIR/vbmeta.img" output/vbmeta.img
-          cp "$PRODUCT_DIR/vbmeta_vendor.img" output/vbmeta_vendor.img
-          cp "$PRODUCT_DIR/vbmeta_system.img" output/vbmeta_system.img
-
-          # Create flash script for user
-          cat > output/flash_all.sh << 'EOF'
-#!/bin/bash
-# Flash script for RMX3760 Android 15 (Virtual A/B, Boot Header v4)
-# Run: sudo ./flash_all.sh
-
-set -e
-
-echo "=== Flashing TWRP RMX3760 Android 15 ==="
-echo "WARNING: This will flash to BOTH slots (A/B)"
-echo "Press Ctrl+C to cancel, Enter to continue..."
-read
-
-# 1. WIPE MISC (critical - prevents auto-recovery boot)
-echo "Wiping misc partition..."
-fastboot erase misc
-
-# 2. Flash boot partitions (recovery.img contains kernel+dtb for recovery)
-echo "Flashing boot (recovery kernel+dtb)..."
-fastboot flash boot_a twrp_recovery.img
-fastboot flash boot_b twrp_recovery.img
-
-# 3. Flash vendor_boot (recovery ramdisk)
-echo "Flashing vendor_boot (recovery ramdisk)..."
-fastboot flash vendor_boot_a twrp_vendor_boot.img
-fastboot flash vendor_boot_b twrp_vendor_boot.img
-
-# 4. Flash AVB verification images
-echo "Flashing vbmeta images..."
-fastboot flash vbmeta_a vbmeta.img
-fastboot flash vbmeta_b vbmeta.img
-fastboot flash vbmeta_vendor_a vbmeta_vendor.img
-fastboot flash vbmeta_vendor_b vbmeta_vendor.img
-fastboot flash vbmeta_system_a vbmeta_system.img
-fastboot flash vbmeta_system_b vbmeta_system.img
-
-# 5. IMPORTANT: init_boot.img & dtbo.img MUST come from STOCK FIRMWARE
-# TWRP device tree doesn't build kernel, so these are not generated here.
-echo ""
-echo "=========================================="
-echo "PERHATIAN: init_boot.img & dtbo.img TIDAK TERMASUK"
-echo "Ambil dari stock firmware Android 15 RMX3760:"
-echo "  - init_boot.img (8MB, init ramdisk)"
-echo "  - dtbo.img (DTB overlays)"
-echo ""
-echo "Flash manual:"
-echo "  fastboot flash init_boot_a stock_init_boot.img"
-echo "  fastboot flash init_boot_b stock_init_boot.img"
-echo "  fastboot flash dtbo_a stock_dtbo.img"
-echo "  fastboot flash dtbo_b stock_dtbo.img"
-echo "=========================================="
-
-echo ""
-echo "Reboot to recovery..."
-fastboot reboot recovery
-EOF
-
-          chmod +x output/flash_all.sh
-
-          # Create info file
-          cat > output/INFO.txt << 'EOF'
-TWRP RMX3760 Android 15 Build Artifacts
-=======================================
-
-Built by GitHub Actions (TWRP device tree only):
-- twrp_recovery.img      : Kernel + DTB + recovery ramdisk (64MB)
-- twrp_vendor_boot.img   : Recovery ramdisk + kernel modules (100MB)
-- vbmeta.img             : AVB for boot/init_boot/dtbo
-- vbmeta_vendor.img      : AVB for vendor_boot
-- vbmeta_system.img      : AVB for system partitions
-
-NOT BUILT (must extract from stock Android 15 firmware):
-- init_boot.img          : 8MB init ramdisk (boot header v4)
-- dtbo.img               : DTB overlay table
-
-Flash Instructions:
-1. Extract init_boot.img & dtbo.img from stock firmware
-2. Run: sudo ./flash_all.sh
-3. Then manually flash init_boot & dtbo from stock
-
-Partition Layout (Virtual A/B, boot header v4):
-- boot_a/b         : 64MB  (kernel + DTB)
-- init_boot_a/b    : 8MB   (init ramdisk)
-- vendor_boot_a/b  : 100MB (vendor ramdisk + recovery)
-- dtbo_a/b         : ~4MB  (DTB overlays)
-- vbmeta_a/b       : AVB footer
-- vbmeta_vendor_a/b: AVB footer
-- vbmeta_system_a/b: AVB footer
-
-Device: RMX3760 (Realme C53) - UMS9230/T612 - Android 15
-EOF
-
-          ls -lh output/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: twrp-RMX3760-vendor_boot
+          path: output/twrp_vendor_boot.img
+          if-no-files-found: error

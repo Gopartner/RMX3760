@@ -82,9 +82,12 @@ BOARD_TAGS_OFFSET := 0x00000100
 BOARD_DTB_OFFSET := 0x01f00000
 BOARD_HEADER_SIZE := 2128
 
-# Stock vendor_boot cmdline (from dump). Note: "bootconfig" is a mkbootimg
-# keyword, not a cmdline token, so it must NOT be in BOARD_VENDOR_CMDLINE.
-BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8
+# Stock vendor_boot v4 cmdline from both Android 15 slots. The two bootconfig
+# tokens are literal bootloader requirements and accompany BOARD_BOOTCONFIG.
+BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8 bootconfig bootconfig
+
+# Exact Android 15 vendor_boot v4 bootconfig from stock vendor_boot_a/b.
+BOARD_BOOTCONFIG := androidboot.hardware=ums9230_hulk androidboot.dtbo_idx=0
 
 BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
 BOARD_MKBOOTIMG_ARGS += --vendor_cmdline $(BOARD_VENDOR_CMDLINE)
@@ -140,7 +143,8 @@ BOARD_REALME_DYNAMIC_PARTITIONS_PARTITION_LIST := \
     vendor \
     odm \
     product \
-    vendor_dlkm
+    vendor_dlkm \
+    system_dlkm
 
 BOARD_REALME_DYNAMIC_PARTITIONS_SIZE := 8384413696
 
@@ -168,9 +172,7 @@ TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_RECOVERY_FSTAB := \
     $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
 
-# Init boot (Android 15 boot header v4)
-BOARD_INIT_BOOT_HEADER_VERSION := 4
-BOARD_BUILD_INIT_BOOT_IMAGE := true
+# init_boot remains stock: vendor_boot supplies only the recovery ramdisk.
 
 # TWRP Configuration
 TW_THEME := portrait_hdpi
