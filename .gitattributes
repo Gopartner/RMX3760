@@ -1,0 +1,12 @@
+# Never touch line endings of binary payloads
+prebuilt/dtb binary
+prebuilt/vendor_bootconfig binary
+recovery/root/lib/modules/*.ko binary
+*.img binary
+
+# Kernel module metadata must stay LF (Linux ramdisk tooling)
+recovery/root/lib/modules/modules.alias text eol=lf
+recovery/root/lib/modules/modules.dep text eol=lf
+recovery/root/lib/modules/modules.load text eol=lf
+recovery/root/lib/modules/modules.load.recovery text eol=lf
+recovery/root/lib/modules/modules.softdep text eol=lf

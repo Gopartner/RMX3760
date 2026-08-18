@@ -41,14 +41,16 @@ Rekomendasi: **simpan dulu stock `vendor_boot_a.img` & `vendor_boot_b.img`** (su
 | `dtb_size` | 134558 (@ `prebuilt/dtb`) |
 | page_size | 4096 |
 | kernel_addr / ramdisk_addr / tags / dtb | 0x8000 / 0x5400000 / 0x100 / 0x1f00000 |
-| cmdline | `console=ttyS1,115200n8 bootconfig bootconfig` |
+| cmdline | `console=ttyS1,115200n8` (token `bootconfig` dibuang: mkbootimg menolaknya & kernel tidak memakainya) |
 | Partition size | `vendor_boot` 104857600, `boot` 67108864, `init_boot` 8388608 |
 | Super | 8388608000 (group `realme_dynamic_partitions`) |
 | FS | system/vendor/product/odm erofs, data f2fs |
 
 ## Cek kepemilikan modul yang benar
 
-- Modul kernel & `modules.load.recovery` diambil dari **dump A15 stock**, bukan dari repo orang lain. Jika `insmod` gagal `vermagic` beda, modul harus dari build kernel yang sama persis (`5.15.178-...-ab40`).
+- Modul kernel (`recovery/root/lib/modules/*.ko`) di-sync dari **device live** (`/vendor/lib/modules`, vendor_dlkm, vermagic `5.15.178-android13-8-g0c749b198e8d-ab40`) supaya pas dengan kernel yang boot (slot B). Modul yang dibuilt-in di kernel ab40 (contoh: `ufs_sprd.ko`, `sdhci-sprd.ko`, `clk-sprd.ko`) dihapus dari ramdisk.
+- `modules.load.recovery` = subset recovery (display/touch/USB/battery) dengan urutan dependensi dari `modules.dep` ab40.
+- Bootconfig stock 57B dipertahankan sebagai `prebuilt/vendor_bootconfig` via `--vendor_bootconfig`.
 
 ## Catatan decryption
 

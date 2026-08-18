@@ -82,14 +82,20 @@ BOARD_TAGS_OFFSET := 0x00000100
 BOARD_DTB_OFFSET := 0x01f00000
 BOARD_HEADER_SIZE := 2128
 
-# Stock vendor_boot v4 cmdline from both Android 15 slots. The two bootconfig
-# tokens are literal bootloader requirements and accompany BOARD_BOOTCONFIG.
-BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8 bootconfig bootconfig
+# Stock vendor_boot v4 cmdline from both Android 15 slots. The two bare
+# "bootconfig" tokens are dropped on purpose: mkbootimg's parse_cmdline()
+# rejects them (ValueError: Unrecognized arguments: ['bootconfig', ...]) and
+# the running kernel does not consume them (/proc/bootconfig absent; uboot
+# supplies bootconfig itself at boot).
+BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8
 
-# Exact Android 15 vendor_boot v4 bootconfig from stock vendor_boot_a/b.
-BOARD_BOOTCONFIG := androidboot.hardware=ums9230_hulk androidboot.dtbo_idx=0
+# Exact Android 15 vendor_boot v4 bootconfig (57 bytes) from stock
+# vendor_boot_a/b. Provided as a raw prebuilt payload via --vendor_bootconfig
+# (BOARD_BOOTCONFIG is not wired into TWRP 12.1's vendorbootimage build).
+BOARD_BOOTCONFIG :=
 
 BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
+BOARD_MKBOOTIMG_ARGS += --vendor_bootconfig $(DEVICE_PATH)/prebuilt/vendor_bootconfig
 BOARD_MKBOOTIMG_ARGS += --vendor_cmdline $(BOARD_VENDOR_CMDLINE)
 BOARD_MKBOOTIMG_ARGS += --pagesize $(BOARD_PAGE_SIZE) --board ""
 BOARD_MKBOOTIMG_ARGS += --kernel_offset $(BOARD_KERNEL_OFFSET)
@@ -154,12 +160,13 @@ TARGET_BOARD_PLATFORM := ums9230
 BOARD_AVB_ENABLE := true
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 
-# VBMeta for vendor_boot (required for Android 15 virtual A/B)
-BOARD_AVB_VBMETA_VENDOR_BOOT := $(DEVICE_PATH)/vbmeta_vendor_boot.img
-BOARD_AVB_VBMETA_VENDOR_BOOT_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
-BOARD_AVB_VBMETA_VENDOR_BOOT_ALGORITHM := SHA256_RSA4096
-BOARD_AVB_VBMETA_VENDOR_BOOT_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
-BOARD_AVB_VBMETA_VENDOR_BOOT_ROLLBACK_INDEX_LOCATION := 3
+# NOTE: This device has NO vbmeta_vendor_boot partition (confirmed via
+# /dev/block/by-name on the live device). BoardConfig previously referenced
+# $(DEVICE_PATH)/vbmeta_vendor_boot.img which does not exist in the tree and
+# would fail the build. The stock vendor_boot_a.img carries a plain AVB hash
+# footer (AVBf @ 104857536), which the AOSP build adds automatically because
+# BOARD_AVB_ENABLE is set. With an unlocked bootloader + vbmeta --flags 3
+# (verification/hash disabled), AVB is relaxed anyway.
 
 # Hack: prevent anti rollback issues during TWRP build
 PLATFORM_SECURITY_PATCH := 2099-12-31
