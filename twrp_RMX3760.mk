@@ -19,7 +19,7 @@ $(call inherit-product-if-exists, vendor/pb/config/common.mk)
 $(call inherit-product, device/realme/RMX3760/device.mk)
 
 PRODUCT_DEVICE := RE58C2 
-PRODUCT_NAME := RMX3760
+PRODUCT_NAME := twrp_RMX3760
 PRODUCT_BRAND := realme C53
 PRODUCT_MODEL := RMX3760
 PRODUCT_MANUFACTURER := realme
