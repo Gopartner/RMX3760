@@ -23,7 +23,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git-core repo gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 lib32z1-dev lib32ncurses6 libncurses5-dev libxml2-utils xsltproc unzip python3 python-is-python3 rsync cpio lz4 bc android-sdk-libsparse-utils android-sdk-ext4-utils libssl-dev pkg-config
+          sudo apt-get install -y git-core repo gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 lib32z1-dev lib32ncurses6 libncurses5-dev libxml2-utils xsltproc unzip python3 python-is-python3 rsync cpio lz4 bc android-sdk-libsparse-utils libssl-dev pkg-config
 
       - name: Init TWRP Source
         run: |
