@@ -43,7 +43,7 @@ jobs:
       - name: Build vendor_boot
         shell: bash
         run: |
-          set -euo pipefail
+          set -e
           cd workspace
           export ALLOW_MISSING_DEPENDENCIES=true
           export SOONG_ALLOW_MISSING_DEPENDENCIES=true
