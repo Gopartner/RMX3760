@@ -2,12 +2,11 @@ name: Build TWRP RMX3760 Android 15
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-22.04
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:
@@ -22,8 +21,21 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y git-core repo gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 lib32z1-dev lib32ncurses6 libncurses5-dev libxml2-utils xsltproc unzip python3 python-is-python3 rsync cpio lz4 bc android-sdk-libsparse-utils libssl-dev pkg-config
+          sudo apt-get update -y || (sleep 15 && sudo apt-get update -y)
+          sudo apt-get install -y --no-install-recommends \
+            git-core gnupg flex bison build-essential zip curl \
+            zlib1g-dev libc6-dev-i386 lib32z1-dev lib32ncurses6 \
+            libncurses5-dev libxml2-utils xsltproc unzip \
+            python3 python-is-python3 rsync cpio lz4 bc \
+            android-sdk-libsparse-utils libssl-dev pkg-config
+
+      - name: Install repo tool
+        run: |
+          if ! command -v repo &>/dev/null; then
+            curl -s https://storage.googleapis.com/git-repo-downloads/repo > /tmp/repo
+            sudo install -m 755 /tmp/repo /usr/local/bin/repo
+          fi
+          repo --version
 
       - name: Init TWRP Source
         run: |
