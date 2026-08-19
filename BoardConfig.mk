@@ -82,12 +82,11 @@ BOARD_TAGS_OFFSET := 0x00000100
 BOARD_DTB_OFFSET := 0x01f00000
 BOARD_HEADER_SIZE := 2128
 
-# Stock vendor_boot v4 cmdline from both Android 15 slots. The two bare
-# "bootconfig" tokens are dropped on purpose: mkbootimg's parse_cmdline()
-# rejects them (ValueError: Unrecognized arguments: ['bootconfig', ...]) and
-# the running kernel does not consume them (/proc/bootconfig absent; uboot
-# supplies bootconfig itself at boot).
-BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8
+# Stock vendor_boot v4 cmdline — exact copy from stock vendor_boot_a/b.
+# "bootconfig bootconfig" tokens告知 Unisoc bootloader untuk append
+# bootconfig section (androidboot.hardware=ums9230_hulk, androidboot.dtbo_idx=0).
+# --vendor_cmdline ditulis langsung ke header TANPA parse_cmdline().
+BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8 bootconfig bootconfig
 
 # Exact Android 15 vendor_boot v4 bootconfig (57 bytes) from stock
 # vendor_boot_a/b. Provided as a raw prebuilt payload via --vendor_bootconfig
@@ -154,7 +153,14 @@ TARGET_BOARD_PLATFORM := ums9230
 
 # Verified Boot
 BOARD_AVB_ENABLE := true
-BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
+# NOTE: --flags 3 TIDAK BEKERJA di Unisoc. Bootloader validates vbmeta
+# signature BEFORE reading flags. Rebuilt vbmeta (AOSP test key) → invalid
+# signature → bootloop. Keep OEM vbmeta unmodified. When bootloader unlocked,
+# vendor_boot hash mismatch is tolerated. User harus:
+# 1. Flash TWRP vendor_boot (fastboot flash vendor_boot_b twrp_vendor_boot.img)
+# 2. JANGAN flash vbmeta baru — keep OEM vbmeta
+# 3. Jika masih bootloop, gunakan UnisocBypass untuk patch uboot
+BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 0
 
 # NOTE: This device has NO vbmeta_vendor_boot partition (confirmed via
 # /dev/block/by-name on the live device). BoardConfig previously referenced

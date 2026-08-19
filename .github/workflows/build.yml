@@ -51,6 +51,13 @@ jobs:
           lunch twrp_RMX3760-eng
           mka vendorbootimage -j"$(nproc)"
 
+      - name: Merge vendor_boot ramdisk 2→1 fragment (Unisoc fix)
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRODUCT_DIR=$(find workspace/out/target/product -mindepth 1 -maxdepth 1 -type d | head -n1)
+          python3 device_tree/scripts/merge_fragments.py "$PRODUCT_DIR/vendor_boot.img"
+
       - name: Collect artifact
         shell: bash
         run: |

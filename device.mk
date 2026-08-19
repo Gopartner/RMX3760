@@ -26,6 +26,11 @@ PRODUCT_PACKAGES += \
     android.hardware.health@2.1-impl \
     android.hardware.health@2.1-service
 
+# Crypto (FBE v2 — keymaster + gatekeeper trusty for data decryption)
+PRODUCT_PACKAGES += \
+    android.hardware.keymaster@4.0-service.trusty \
+    android.hardware.gatekeeper@1.0-service.trusty
+
 # OTA / Update Engine
 PRODUCT_PACKAGES += \
     otapreopt_script \
