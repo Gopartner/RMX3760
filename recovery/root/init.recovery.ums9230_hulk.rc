@@ -1,11 +1,13 @@
 # SPDX-FileCopyrightText: 2016-2023 Unisoc (Shanghai) Technologies Co., Ltd
 # SPDX-License-Identifier: LicenseRef-Unisoc-General-1.0
 
-import /vendor/etc/init/hw/init.${ro.hardware}.usb.rc
-import /vendor/etc/init/hw/init.ram.rc
-import /vendor/etc/init/hw/init.storage.rc
-import /vendor/etc/init/hw/init.cali.rc
-import /vendor/etc/init/hw/init.socmodel.rc
+# Vendor HW init files are not present in TWRP recovery ramdisk.
+# TWRP handles USB, module loading, and storage via its own mechanisms.
+# import /vendor/etc/init/hw/init.${ro.hardware}.usb.rc
+# import /vendor/etc/init/hw/init.ram.rc
+# import /vendor/etc/init/hw/init.storage.rc
+# import /vendor/etc/init/hw/init.cali.rc
+# import /vendor/etc/init/hw/init.socmodel.rc
 
 on init
     start watchdogd
@@ -16,7 +18,8 @@ on post-fs-data
     setprop vold.post_fs_data_done 1
     # setprop debug.sf.latch_unsignaled 1
     setprop debug.sf.enable_gl_backpressure 0
-    insmod ${ro.vendor.ko.mount.point}/socko/akm4377.ko
+    # akm4377.ko not available in recovery ramdisk; module loading handled by TWRP
+    # insmod ${ro.vendor.ko.mount.point}/socko/akm4377.ko
 
 # Set watchdog timer to 30 seconds and pet it every 10 seconds to get a 20 second margin
 service watchdogd /system/bin/watchdogd 10 30
@@ -48,24 +51,26 @@ on early-boot
     # comment out for bringup
     # wait_for_prop vendor.all.modules.ready 1
 
-on early-init
-    start insmod-sh
+# init.insmod.sh not present in recovery ramdisk; TWRP loads vendor modules via TW_LOAD_VENDOR_MODULES
+# on early-init
+#     start insmod-sh
 
-service insmod-sh /vendor/bin/init.insmod.sh /vendor/lib/modules/init.insmod.cfg ${ro.bootmode}
-    class main
-    user root
-    group root system
-    disabled
-    oneshot
+# service insmod-sh /vendor/bin/init.insmod.sh /vendor/lib/modules/init.insmod.cfg ${ro.bootmode}
+#     class main
+#     user root
+#     group root system
+#     disabled
+#     oneshot
 
-on property:dev.bootcomplete=1
-    start mmc_ffu
+# mmc_ffu not present in recovery ramdisk
+# on property:dev.bootcomplete=1
+#     start mmc_ffu
 
-service mmc_ffu /vendor/bin/mmc_ffu do
-    class main
-    user root
-    disabled
-    oneshot
+# service mmc_ffu /vendor/bin/mmc_ffu do
+#     class main
+#     user root
+#     disabled
+#     oneshot
 
 on property:sys.boot_completed=1
     write /sys/devices/platform/oplus_devinfo/uart_gpio_ctrl 0

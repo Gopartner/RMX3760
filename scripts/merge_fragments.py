@@ -3,8 +3,11 @@
 Post-build vendor_boot v4 patcher for Unisoc UMS9230 devices.
 
 Two jobs:
-  1. Binary-patch vendor_cmdline at header offset 0x800 to include
-     "bootconfig bootconfig" tokens that mkbootimg parse_cmdline() rejects.
+  1. Binary-patch cmdline at header offset 0x1C (2048-byte vendor cmdline
+     field) to include "bootconfig bootconfig" tokens that mkbootimg
+     parse_cmdline() rejects.  The bootloader reads cmdline from 0x1C
+     (U-Boot android_vendor_boot_image_v3_v4_parse_hdr → hdr->cmdline)
+     and concatenates it into bootargs.
   2. Merge vendor_ramdisk_table fragments from 2 → 1 PLATFORM entry
      (Unisoc bootloader only loads PLATFORM type fragments).
 
@@ -19,15 +22,24 @@ VENDOR_RAMDISK_TYPE_PLATFORM = 1
 # Full cmdline from stock vendor_boot. mkbootimg parse_cmdline() rejects
 # the bare "bootconfig" tokens, so BOARD_VENDOR_CMDLINE only contains
 # "console=ttyS1,115200n8". We patch the full string here post-build.
+#
+# vendor_boot v4 header layout (file offsets):
+#   0x00  magic "VNDRBOOT" (8B)
+#   0x08  header_version   0x0C  page_size       0x10  kernel_addr
+#   0x14  ramdisk_addr     0x18  vendor_ramdisk_size
+#   0x1C  cmdline[2048]    ← THIS field (vendor kernel cmdline)
+#   0x81C tags_addr        0x820 name[16]        0x830 header_size
+#   0x834 dtb_size         0x838 dtb_addr(8B)    0x840 vrt_size
+#   0x844 vrt_entry_num    0x848 vrt_entry_size  0x84C bootconfig_size
 VENDOR_CMDLINE_FULL = b"console=ttyS1,115200n8 bootconfig bootconfig"
-CMDLINE_OFFSET = 0x800
-CMDLINE_BUF_SIZE = 1024
+CMDLINE_OFFSET = 0x1C
+CMDLINE_BUF_SIZE = 2048
 
 
 def patch_cmdline(data):
-    """Write full vendor cmdline (with bootconfig tokens) into header."""
+    """Write full cmdline (with bootconfig tokens) into vendor_boot header at 0x1C."""
     current = data[CMDLINE_OFFSET:CMDLINE_OFFSET + CMDLINE_BUF_SIZE].split(b"\x00")[0]
-    print(f"=== vendor_cmdline @ 0x{CMDLINE_OFFSET:x} ===")
+    print(f"=== cmdline @ 0x{CMDLINE_OFFSET:x} (2048B vendor cmdline field) ===")
     print(f"  current: [{current.decode(errors='replace')}]")
     print(f"  patching to: [{VENDOR_CMDLINE_FULL.decode()}]")
     data[CMDLINE_OFFSET:CMDLINE_OFFSET + CMDLINE_BUF_SIZE] = b"\x00" * CMDLINE_BUF_SIZE

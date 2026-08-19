@@ -1,22 +1,24 @@
 # SPDX-FileCopyrightText: 2016-2026 Unisoc (Shanghai) Technologies Co., Ltd
 # SPDX-License-Identifier: LicenseRef-Unisoc-General-1.0
 
-service create_splloader_dual_slot_byname_path /system/bin/create_splloader_dual_slot_byname_path.sh
-    user root
-    group root system
-    disabled
-    oneshot
-    seclabel u:r:create_spl_link_recovery:s0
+# create_splloader_dual_slot_byname_path.sh not present in TWRP recovery ramdisk
+# service create_splloader_dual_slot_byname_path /system/bin/create_splloader_dual_slot_byname_path.sh
+#     user root
+#     group root system
+#     disabled
+#     oneshot
+#     seclabel u:r:create_spl_link_recovery:s0
 
-service vendor.mlogservice /vendor/bin/mlogservice
-    class main
-    user shell
-    group system root
+# mlogservice not present in TWRP recovery ramdisk
+# service vendor.mlogservice /vendor/bin/mlogservice
+#     class main
+#     user shell
+#     group system root
 
 on init
     write /sys/fs/selinux/checkreqprot 0
 
-    start create_splloader_dual_slot_byname_path
+    # start create_splloader_dual_slot_byname_path
 
     export PATH /system/bin:/vendor/bin
     export SECONDARY_STORAGE /storage/sdcard0

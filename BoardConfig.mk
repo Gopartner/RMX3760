@@ -83,11 +83,12 @@ BOARD_DTB_OFFSET := 0x01f00000
 BOARD_HEADER_SIZE := 2128
 
 # Stock vendor_boot v4 cmdline — exact copy from stock vendor_boot_a/b.
-# "bootconfig bootconfig" tokens tell Unisoc bootloader to append the
-# bootconfig section (androidboot.hardware, androidboot.dtbo_idx, etc.).
+# "bootconfig bootconfig" tokens tell the kernel to parse the bootconfig
+# section (androidboot.hardware, androidboot.dtbo_idx, etc.) appended
+# after initrd by the bootloader (U-Boot android_image_get_kernel).
 # mkbootimg parse_cmdline() rejects "bootconfig" as unrecognized arg, so
 # the full cmdline (with tokens) is injected post-build by merge_fragments.py
-# at header offset 0x800 (vendor_cmdline buffer).
+# into the cmdline field at header offset 0x1C (ANDR_VENDOR_BOOT_ARGS_SIZE=2048).
 BOARD_VENDOR_CMDLINE := console=ttyS1,115200n8
 
 # Exact Android 15 vendor_boot v4 bootconfig (57 bytes) from stock
