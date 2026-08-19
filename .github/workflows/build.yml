@@ -2,6 +2,8 @@ name: Build TWRP RMX3760 Android 15
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   build:
