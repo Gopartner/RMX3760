@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: read
@@ -20,8 +20,17 @@ jobs:
           df -h
 
       - name: Install Dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt-get update -y || (sleep 15 && sudo apt-get update -y)
+          set +e
+          timeout 60 sudo apt-get update -y 2>/dev/null
+          if [ $? -eq 124 ]; then
+            echo "apt-get update timed out, trying with --fix-missing"
+            sudo sed -i 's|http://archive.ubuntu.com|http://us-east-1.ec2.archive.ubuntu.com|g' /etc/apt/sources.list
+            timeout 60 sudo apt-get update -y
+          fi
+          set -e
           sudo apt-get install -y --no-install-recommends \
             git-core gnupg flex bison build-essential zip curl \
             zlib1g-dev libc6-dev-i386 lib32z1-dev lib32ncurses6 \
